@@ -6,6 +6,7 @@ dist/
 *.so
 *.dylib
 cmd/universcan/web/
+site/
 
 # OS specific files
 .DS_Store

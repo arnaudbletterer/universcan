@@ -44,24 +44,29 @@ jobs:
             echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           }
 
-      - name: Compile Windows Executable
-        env:
-          GOOS: windows
-          GOARCH: amd64
-          CGO_ENABLED: 0
+      - name: Compile Windows Executables (64-bit & 32-bit for older PCs)
         run: |
           mkdir bin -ErrorAction SilentlyContinue
           $tag = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { '${{ github.event.inputs.tag_name }}' }
-          go build -buildvcs=false -ldflags "-s -w -X main.Version=$tag" -o bin/universcan.exe ./cmd/universcan
+          $flags = "-s -w -X main.Version=$tag"
+          
+          # 64-bit Windows
+          $env:GOOS = "windows"; $env:GOARCH = "amd64"; $env:CGO_ENABLED = "0"
+          go build -buildvcs=false -ldflags $flags -o bin/universcan.exe ./cmd/universcan
+          
+          # 32-bit Windows (for Windows 7 SP1 / 8 / 10 32-bit legacy machines)
+          $env:GOOS = "windows"; $env:GOARCH = "386"; $env:CGO_ENABLED = "0"
+          go build -buildvcs=false -ldflags $flags -o bin/universcan-windows-386.exe ./cmd/universcan
 
-      - name: Build Inno Setup Installer
+      - name: Build Inno Setup Universal Installer (includes both 32-bit & 64-bit)
         run: |
           mkdir dist/windows -ErrorAction SilentlyContinue
           iscc packaging/windows/installer.iss
 
-      - name: Create Portable Zip Archive
+      - name: Create Portable Zip Archives
         run: |
           Compress-Archive -Path bin/universcan.exe -DestinationPath dist/windows/universcan-windows-x86_64.zip -Force
+          Compress-Archive -Path bin/universcan-windows-386.exe -DestinationPath dist/windows/universcan-windows-i386.zip -Force
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
@@ -70,6 +75,7 @@ jobs:
           path: |
             dist/windows/UniverScan-Setup.exe
             dist/windows/universcan-windows-x86_64.zip
+            dist/windows/universcan-windows-i386.zip
           retention-days: 1
 
   # ============================================================================
@@ -140,17 +146,23 @@ jobs:
           mkdir -p cmd/universcan/web
           cp -r web/* cmd/universcan/web/
 
-      - name: Compile Linux Binary
+      - name: Compile Linux Binaries (x86_64, 32-bit legacy x86, ARM64 Raspberry Pi)
         run: |
-          mkdir -p bin
+          mkdir -p bin dist/linux
           tag="${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.tag_name }}"
           LDFLAGS="-s -w -X main.Version=${tag}"
+          
+          # Linux x86_64
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/universcan-linux-amd64 ./cmd/universcan
+          tar -czvf dist/linux/universcan-linux-x86_64.tar.gz -C bin universcan-linux-amd64
+          
+          # Linux 32-bit i386 (Legacy computers)
+          CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/universcan-linux-386 ./cmd/universcan
+          tar -czvf dist/linux/universcan-linux-i386.tar.gz -C bin universcan-linux-386
 
-      - name: Package Linux Bundle
-        run: |
-          chmod +x packaging/linux/build_appimage.sh
-          ./packaging/linux/build_appimage.sh
+          # Linux ARM64 (Raspberry Pi 3/4/5)
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/universcan-linux-arm64 ./cmd/universcan
+          tar -czvf dist/linux/universcan-linux-arm64.tar.gz -C bin universcan-linux-arm64
 
       - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
@@ -158,6 +170,8 @@ jobs:
           name: linux-release
           path: |
             dist/linux/universcan-linux-x86_64.tar.gz
+            dist/linux/universcan-linux-i386.tar.gz
+            dist/linux/universcan-linux-arm64.tar.gz
           retention-days: 1
 
   # ============================================================================
@@ -192,7 +206,10 @@ jobs:
           files: |
             release-artifacts/UniverScan-Setup.exe
             release-artifacts/universcan-windows-x86_64.zip
+            release-artifacts/universcan-windows-i386.zip
             release-artifacts/UniverScan-macOS.zip
             release-artifacts/UniverScan-macOS.dmg
             release-artifacts/universcan-linux-x86_64.tar.gz
+            release-artifacts/universcan-linux-i386.tar.gz
+            release-artifacts/universcan-linux-arm64.tar.gz
             release-artifacts/SHA256SUMS.txt

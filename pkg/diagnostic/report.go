@@ -191,9 +191,29 @@ func (c *Collector) GenerateReport(ctx context.Context, targetIP string) (*Diagn
 		report.RecommendedProtocol = "None detected (Check power / IP connection)"
 	}
 
-	// Generate Markdown diagnostic report
+	// Generate Markdown diagnostic report with human-friendly summary first
 	var md bytes.Buffer
-	md.WriteString("# UniverScan Hardware Diagnostics Report\n\n")
+	md.WriteString("# UniverScan Scanner Status & Help Report\n\n")
+	md.WriteString("### Quick Summary\n")
+	md.WriteString(fmt.Sprintf("- **Scanner:** %s (%s)\n", report.Model, report.TargetIP))
+	if len(openPorts) > 0 {
+		md.WriteString("- **Connection:** Scanner is online and reachable\n")
+	} else {
+		md.WriteString("- **Connection:** Scanner is not reachable (check power and Wi-Fi)\n")
+	}
+	if samAvailable, _ := samsungRes["available"].(bool); samAvailable {
+		if isSleep, ok := samsungRes["is_sleeping"].(bool); ok && isSleep {
+			md.WriteString("- **Power:** In sleep mode (click 'Wake Up Scanner' in the app)\n")
+		} else {
+			md.WriteString("- **Power:** Awake and ready to scan\n")
+		}
+		if docInADF, ok := samsungRes["doc_in_adf"].(bool); ok && docInADF {
+			md.WriteString("- **Paper Tray:** Paper detected in top feeder\n")
+		} else {
+			md.WriteString("- **Paper Tray:** Top feeder is empty (Scanner glass is ready)\n")
+		}
+	}
+	md.WriteString("\n---\n### Technical Details (for support & AI assistants)\n")
 	md.WriteString(fmt.Sprintf("- **Generated At:** `%s`\n", report.Timestamp.Format(time.RFC3339)))
 	md.WriteString(fmt.Sprintf("- **Target IP:** `%s`\n", report.TargetIP))
 	md.WriteString(fmt.Sprintf("- **Manufacturer:** `%s`\n", report.Manufacturer))

@@ -24,15 +24,23 @@ Copy-Item -Recurse -Force (Join-Path $RootDir "web\*") $CmdWebDir
 # Go flags for compact, stripped binaries with embedded assets
 $LdFlags = "-s -w -X main.Version=0.1.0"
 
-# 1. Windows x86_64
+# 1. Windows x86_64 (Modern 64-bit Windows 7/8/10/11)
 Write-Host "--> Compiling Windows x86_64 (bin/universcan.exe)..." -ForegroundColor Yellow
 $env:GOOS = "windows"
 $env:GOARCH = "amd64"
 $env:CGO_ENABLED = "0"
 go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan.exe" "$RootDir/cmd/universcan"
-if ($LASTEXITCODE -ne 0) { throw "Windows build failed" }
+if ($LASTEXITCODE -ne 0) { throw "Windows x86_64 build failed" }
 
-# 2. macOS Apple Silicon (ARM64)
+# 2. Windows 32-bit (Legacy PCs, Netbooks, Windows 7 SP1 / 8 / 10 32-bit)
+Write-Host "--> Compiling Windows 32-bit (bin/universcan-windows-386.exe)..." -ForegroundColor Yellow
+$env:GOOS = "windows"
+$env:GOARCH = "386"
+$env:CGO_ENABLED = "0"
+go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan-windows-386.exe" "$RootDir/cmd/universcan"
+if ($LASTEXITCODE -ne 0) { throw "Windows 32-bit build failed" }
+
+# 3. macOS Apple Silicon (ARM64 - M1, M2, M3, M4)
 Write-Host "--> Compiling macOS Apple Silicon (bin/universcan-darwin-arm64)..." -ForegroundColor Yellow
 $env:GOOS = "darwin"
 $env:GOARCH = "arm64"
@@ -40,7 +48,7 @@ $env:CGO_ENABLED = "0"
 go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan-darwin-arm64" "$RootDir/cmd/universcan"
 if ($LASTEXITCODE -ne 0) { throw "macOS ARM64 build failed" }
 
-# 3. macOS Intel (x86_64)
+# 4. macOS Intel (x86_64 - Older Intel Macs)
 Write-Host "--> Compiling macOS Intel (bin/universcan-darwin-amd64)..." -ForegroundColor Yellow
 $env:GOOS = "darwin"
 $env:GOARCH = "amd64"
@@ -48,13 +56,29 @@ $env:CGO_ENABLED = "0"
 go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan-darwin-amd64" "$RootDir/cmd/universcan"
 if ($LASTEXITCODE -ne 0) { throw "macOS AMD64 build failed" }
 
-# 4. Linux x86_64
+# 5. Linux x86_64 (Static binary, zero libc lock, all modern distros)
 Write-Host "--> Compiling Linux x86_64 (bin/universcan-linux-amd64)..." -ForegroundColor Yellow
 $env:GOOS = "linux"
 $env:GOARCH = "amd64"
 $env:CGO_ENABLED = "0"
 go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan-linux-amd64" "$RootDir/cmd/universcan"
-if ($LASTEXITCODE -ne 0) { throw "Linux build failed" }
+if ($LASTEXITCODE -ne 0) { throw "Linux AMD64 build failed" }
+
+# 6. Linux 32-bit (Legacy x86 PCs, thin clients, antique distros)
+Write-Host "--> Compiling Linux 32-bit (bin/universcan-linux-386)..." -ForegroundColor Yellow
+$env:GOOS = "linux"
+$env:GOARCH = "386"
+$env:CGO_ENABLED = "0"
+go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan-linux-386" "$RootDir/cmd/universcan"
+if ($LASTEXITCODE -ne 0) { throw "Linux 32-bit build failed" }
+
+# 7. Linux ARM64 (Raspberry Pi 3/4/5, ARM mini PCs)
+Write-Host "--> Compiling Linux ARM64 (bin/universcan-linux-arm64)..." -ForegroundColor Yellow
+$env:GOOS = "linux"
+$env:GOARCH = "arm64"
+$env:CGO_ENABLED = "0"
+go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan-linux-arm64" "$RootDir/cmd/universcan"
+if ($LASTEXITCODE -ne 0) { throw "Linux ARM64 build failed" }
 
 # Reset environment variables
 $env:GOOS = ""

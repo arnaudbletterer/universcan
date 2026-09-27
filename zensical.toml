@@ -1,0 +1,70 @@
+# ============================================================================
+# UniverScan Documentation - Zensical Configuration
+# Simple, Friendly, Accessible Documentation for Everyone
+# ============================================================================
+
+[project]
+site_name = "UniverScan"
+site_description = "The Simple, Universal Document Scanner for Everyone"
+site_author = "UniverScan Open Source Team"
+copyright = """
+Copyright &copy; 2026 UniverScan Contributors. Free and open source for everyone.
+"""
+
+# Repository configuration
+repo_url = "https://github.com/abletterer/universcan"
+repo_name = "UniverScan"
+
+# Documentation and site directories
+docs_dir = "docs"
+site_dir = "site"
+
+# Navigation Structure
+nav = [
+    { "Welcome" = "index.md" },
+    { "Getting Started" = "getting-started.md" },
+    { "How to Scan" = "how-to-scan.md" },
+    { "2-Sided Scanning Guide" = "two-sided-guide.md" },
+    { "Supported Scanners" = "supported-scanners.md" },
+    { "Problem Solver & Help" = "troubleshooting.md" },
+    { "Building from Source" = "developer-guide.md" },
+]
+
+# Theme Configuration
+[project.theme]
+variant = "modern"
+language = "en"
+features = [
+    "announce.dismiss",
+    "content.code.copy",
+    "content.code.select",
+    "navigation.footer",
+    "navigation.indexes",
+    "navigation.instant",
+    "navigation.sections",
+    "navigation.top",
+    "search.highlight",
+]
+
+[project.theme.font]
+text = "Inter"
+code = "JetBrains Mono"
+
+[[project.theme.palette]]
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+# Markdown Extensions
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.def_list]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.toc]
+permalink = true

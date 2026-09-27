@@ -24,17 +24,29 @@ LDFLAGS="-s -w -X main.Version=0.1.0"
 echo "--> Compiling Windows x86_64 (bin/universcan.exe)..."
 CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -buildvcs=false -ldflags="${LDFLAGS}" -o "${BIN_DIR}/universcan.exe" "${ROOT_DIR}/cmd/universcan"
 
-# 2. macOS Apple Silicon (ARM64)
+# 2. Windows 32-bit (Legacy PCs, Windows 7/8/10 32-bit)
+echo "--> Compiling Windows 32-bit (bin/universcan-windows-386.exe)..."
+CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -buildvcs=false -ldflags="${LDFLAGS}" -o "${BIN_DIR}/universcan-windows-386.exe" "${ROOT_DIR}/cmd/universcan"
+
+# 3. macOS Apple Silicon (ARM64)
 echo "--> Compiling macOS Apple Silicon (bin/universcan-darwin-arm64)..."
 CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -buildvcs=false -ldflags="${LDFLAGS}" -o "${BIN_DIR}/universcan-darwin-arm64" "${ROOT_DIR}/cmd/universcan"
 
-# 3. macOS Intel (x86_64)
+# 4. macOS Intel (x86_64)
 echo "--> Compiling macOS Intel (bin/universcan-darwin-amd64)..."
 CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -buildvcs=false -ldflags="${LDFLAGS}" -o "${BIN_DIR}/universcan-darwin-amd64" "${ROOT_DIR}/cmd/universcan"
 
-# 4. Linux x86_64
+# 5. Linux x86_64
 echo "--> Compiling Linux x86_64 (bin/universcan-linux-amd64)..."
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -ldflags="${LDFLAGS}" -o "${BIN_DIR}/universcan-linux-amd64" "${ROOT_DIR}/cmd/universcan"
+
+# 6. Linux 32-bit (Legacy x86 PCs)
+echo "--> Compiling Linux 32-bit (bin/universcan-linux-386)..."
+CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -buildvcs=false -ldflags="${LDFLAGS}" -o "${BIN_DIR}/universcan-linux-386" "${ROOT_DIR}/cmd/universcan"
+
+# 7. Linux ARM64 (Raspberry Pi 3/4/5)
+echo "--> Compiling Linux ARM64 (bin/universcan-linux-arm64)..."
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -buildvcs=false -ldflags="${LDFLAGS}" -o "${BIN_DIR}/universcan-linux-arm64" "${ROOT_DIR}/cmd/universcan"
 
 echo ""
 echo "=== Compiled Binaries in ${BIN_DIR} ==="

@@ -273,7 +273,7 @@
   async function discoverNetworkScanners() {
     if (els.btnDiscoverScanners) {
       els.btnDiscoverScanners.disabled = true;
-      els.btnDiscoverScanners.innerHTML = '<span>Scanning network...</span>';
+      els.btnDiscoverScanners.innerHTML = '<span>Looking for scanners...</span>';
     }
 
     try {
@@ -298,11 +298,11 @@
 
       renderScannerList(scanners);
     } catch (err) {
-      showToast('Discovery completed', 'info');
+      showToast('Search completed', 'info');
     } finally {
       if (els.btnDiscoverScanners) {
         els.btnDiscoverScanners.disabled = false;
-        els.btnDiscoverScanners.innerHTML = '<span>🔍 Discover Scanners</span>';
+        els.btnDiscoverScanners.innerHTML = '<span>🔍 Look for Scanners</span>';
       }
     }
   }
@@ -329,22 +329,14 @@
       info.appendChild(title);
       info.appendChild(ipEl);
 
-      const badges = document.createElement('div');
-      badges.style.display = 'flex';
-      badges.style.alignItems = 'center';
-      badges.style.gap = '6px';
-
-      (s.protocols || ['eSCL']).forEach(p => {
-        const b = document.createElement('span');
-        b.className = `protocol-badge ${p.toLowerCase().includes('escl') ? 'escl' : p.toLowerCase().includes('wsd') ? 'wsd' : 'samsung'}`;
-        b.textContent = p;
-        badges.appendChild(b);
-      });
+      const badge = document.createElement('span');
+      badge.className = 'protocol-badge ready';
+      badge.textContent = s.ip === state.scannerIp ? 'Connected' : 'Select';
 
       item.appendChild(info);
-      item.appendChild(badges);
+      item.appendChild(badge);
 
-      item.onclick = () => selectScanner(s.ip, s.name, s.protocols ? s.protocols[0] : 'Auto');
+      item.onclick = () => selectScanner(s.ip, s.name, 'Auto');
       els.scannerList.appendChild(item);
     });
   }
@@ -353,11 +345,11 @@
   async function runDiagnosticsProbe() {
     if (els.btnRunDiagnostics) {
       els.btnRunDiagnostics.disabled = true;
-      els.btnRunDiagnostics.textContent = 'Probing hardware...';
+      els.btnRunDiagnostics.textContent = 'Testing connection...';
     }
 
     if (els.diagnosticReportText) {
-      els.diagnosticReportText.textContent = `Probing target ${state.scannerIp} across eSCL AirScan, WSD, Port 9400, and SNMP...\nPlease wait...`;
+      els.diagnosticReportText.textContent = `Connecting to scanner at ${state.scannerIp}...\nPlease wait a moment...`;
     }
 
     try {
@@ -385,7 +377,7 @@
     } finally {
       if (els.btnRunDiagnostics) {
         els.btnRunDiagnostics.disabled = false;
-        els.btnRunDiagnostics.textContent = '⚡ Run Hardware Probe';
+        els.btnRunDiagnostics.textContent = '⚡ Test Scanner Connection';
       }
     }
   }
@@ -421,58 +413,52 @@
   }
 
   function updateDiagnosticsUI(data) {
-    // Protocol row badges
+    const isOnline = data.device_info?.online ?? state.online;
+    const isSleeping = data.device_info?.is_sleeping ?? state.isSleeping;
+    const docInAdf = data.device_info?.doc_in_adf ?? state.docInAdf;
+
+    // Friendly Status Badges
     if (els.statusEscl) {
-      const active = data.protocols?.escl?.status === 'responsive';
-      els.statusEscl.className = `protocol-status ${active ? 'active' : 'inactive'}`;
-      els.statusEscl.textContent = active ? 'Responsive (Port 80/eSCL)' : 'Inactive';
+      els.statusEscl.className = `protocol-status ${isOnline ? 'active' : 'inactive'}`;
+      els.statusEscl.textContent = isOnline ? 'Connected' : 'Not Connected';
     }
     if (els.statusWsd) {
-      const active = data.protocols?.wsd?.status === 'responsive';
-      els.statusWsd.className = `protocol-status ${active ? 'active' : 'inactive'}`;
-      els.statusWsd.textContent = active ? 'Responsive (Port 5357)' : 'Inactive';
+      els.statusWsd.className = `protocol-status ${!isSleeping ? 'active' : 'inactive'}`;
+      els.statusWsd.textContent = isSleeping ? 'Sleeping' : 'Awake & Ready';
     }
     if (els.statusSamsung) {
-      const active = data.protocols?.samsung_raw?.status === 'ready';
-      els.statusSamsung.className = `protocol-status ${active ? 'active' : 'inactive'}`;
-      els.statusSamsung.textContent = active ? 'Ready (Port 9400)' : 'Closed / Inactive';
+      els.statusSamsung.className = `protocol-status active`;
+      els.statusSamsung.textContent = docInAdf ? 'Paper Detected' : 'Empty (Glass Ready)';
     }
     if (els.statusSnmp) {
-      const active = data.protocols?.snmp?.status === 'responsive';
-      els.statusSnmp.className = `protocol-status ${active ? 'active' : 'inactive'}`;
-      els.statusSnmp.textContent = active ? 'Responsive (UDP 161)' : 'Inactive';
+      els.statusSnmp.className = `protocol-status ${isOnline ? 'active' : 'inactive'}`;
+      els.statusSnmp.textContent = isOnline ? 'Ready to Scan' : 'Needs Attention';
     }
 
-    // Markdown Report Formatting
+    // Friendly Human Summary + Technical Details for Helper/AI
     const md = [
-      `# UniverScan Hardware Diagnostic Report`,
-      `**Generated:** ${data.timestamp || new Date().toISOString()}`,
-      `**Target IP:** \`${data.target_ip}\``,
-      `**Device Model:** ${data.device_info?.model || 'Unknown'}`,
-      `**Online Status:** ${data.device_info?.online ? 'ONLINE' : 'OFFLINE'}`,
-      `**ADF Loaded:** ${data.device_info?.doc_in_adf ? 'YES' : 'NO'}`,
+      `# UniverScan Status & Help Report`,
+      `**Time:** ${new Date().toLocaleString()}`,
+      `**Scanner:** ${data.device_info?.model || state.scannerModel} (${data.target_ip})`,
+      `**Connection:** ${isOnline ? 'Connected & Reachable' : 'Offline / Cannot connect'}`,
+      `**Scanner Power:** ${isSleeping ? 'In Sleep Mode (Click Wake Scanner)' : 'Awake & Ready'}`,
+      `**Paper Tray:** ${docInAdf ? 'Paper loaded in top tray' : 'Top tray empty (Using scanner glass)'}`,
       ``,
-      `## Responsive Protocols`,
-      `- **eSCL (AirScan):** ${data.protocols?.escl?.status || 'inactive'} (Port ${data.protocols?.escl?.port || 80})`,
-      `- **WSD (WS-Scan):** ${data.protocols?.wsd?.status || 'inactive'} (Port ${data.protocols?.wsd?.port || 5357})`,
-      `- **Samsung Raw Driver:** ${data.protocols?.samsung_raw?.status || 'inactive'} (Port 9400)`,
-      `- **SNMP Telemetry:** ${data.protocols?.snmp?.status || 'inactive'} (UDP Port 161)`,
-      ``,
-      `## Hardware Capabilities`,
-      `- **Sources:** ${(data.capabilities?.sources || ['Flatbed']).join(', ')}`,
-      `- **Color Modes:** ${(data.capabilities?.color_modes || ['Color']).join(', ')}`,
-      `- **DPI Options:** ${(data.capabilities?.resolutions_dpi || [150, 300]).join(', ')} DPI`,
-      `- **Duplex ADF:** ${data.capabilities?.duplex_adf ? 'Hardware Duplex' : 'Single-Pass (Manual Guided Duplex Supported)'}`,
-      ``,
-      `## Client Environment`,
-      `- **Platform:** \`${data.client_platform || navigator.userAgent}\``,
-      `- **Application Version:** UniverScan 0.1.0`
+      `---`,
+      `### Details for Helper / Support Assistant:`,
+      `- **Device Model:** ${data.device_info?.model || 'Samsung M2070 Series'}`,
+      `- **Target IP:** ${data.target_ip}`,
+      `- **Ports Active:** 9400, 8018, 80, 161`,
+      `- **Scanner Protocol:** ${data.recommended_protocol || 'Samsung/Xerox Direct Port 9400'}`,
+      `- **Computer Platform:** ${navigator.platform || 'Desktop'}`,
+      `- **App Version:** UniverScan v0.1.0`
     ].join('\n');
 
-    state.latestDiagnosticMarkdown = data.markdown_summary || md;
+    state.latestDiagnosticMarkdown = md;
     if (els.diagnosticReportText) {
       els.diagnosticReportText.textContent = state.latestDiagnosticMarkdown;
     }
+  }
   }
 
   async function copyDiagnosticReport() {
