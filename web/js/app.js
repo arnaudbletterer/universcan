@@ -7,9 +7,25 @@
 (() => {
   'use strict';
 
+  function safeGet(key, fallback = '') {
+    try {
+      return localStorage.getItem(key) || fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function safeSet(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (e) {
+      // ignore
+    }
+  }
+
   // State Management
   const state = {
-    scannerIp: localStorage.getItem('universcan_ip') || localStorage.getItem('prism_scanner_ip') || '192.168.1.50',
+    scannerIp: safeGet('universcan_ip', safeGet('prism_scanner_ip', '192.168.1.50')),
     scannerModel: 'Samsung M2070 Series',
     activeProtocol: 'Auto',
     online: false,
@@ -28,7 +44,7 @@
     duplexPhase: 0,     // 0 = idle, 1 = side 1 scanning/done, 2 = side 2 scanning
     previewIndex: -1,
     previewZoom: 1.0,
-    theme: localStorage.getItem('universcan_theme') || localStorage.getItem('prism_theme') || 'light',
+    theme: safeGet('universcan_theme', safeGet('prism_theme', 'light')),
     latestDiagnosticReport: null,
     latestDiagnosticMarkdown: ''
   };
@@ -215,7 +231,7 @@
 
   function applyTheme(theme) {
     state.theme = theme;
-    localStorage.setItem('universcan_theme', theme);
+    safeSet('universcan_theme', theme);
     els.html.setAttribute('data-theme', theme);
     if (els.themeToggle) {
       els.themeToggle.title = theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme';
@@ -241,7 +257,7 @@
   // Scanner Selection & Discovery
   async function selectScanner(ip, name = '', protocol = '') {
     state.scannerIp = ip;
-    localStorage.setItem('universcan_ip', ip);
+    safeSet('universcan_ip', ip);
     if (name) state.scannerModel = name;
     if (protocol) state.activeProtocol = protocol;
 
@@ -458,7 +474,6 @@
     if (els.diagnosticReportText) {
       els.diagnosticReportText.textContent = state.latestDiagnosticMarkdown;
     }
-  }
   }
 
   async function copyDiagnosticReport() {
