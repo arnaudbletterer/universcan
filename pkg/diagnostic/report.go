@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"prismscan/pkg/scanner"
+	"universcan/pkg/scanner"
 )
 
 // DiagnosticReport represents the full hardware telemetry report.
@@ -193,7 +193,7 @@ func (c *Collector) GenerateReport(ctx context.Context, targetIP string) (*Diagn
 
 	// Generate Markdown diagnostic report
 	var md bytes.Buffer
-	md.WriteString("# PrismScan Hardware Diagnostics Report\n\n")
+	md.WriteString("# UniverScan Hardware Diagnostics Report\n\n")
 	md.WriteString(fmt.Sprintf("- **Generated At:** `%s`\n", report.Timestamp.Format(time.RFC3339)))
 	md.WriteString(fmt.Sprintf("- **Target IP:** `%s`\n", report.TargetIP))
 	md.WriteString(fmt.Sprintf("- **Manufacturer:** `%s`\n", report.Manufacturer))

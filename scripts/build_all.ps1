@@ -1,4 +1,4 @@
-# PrismScan Cross-Platform Multi-Target Build Script (PowerShell)
+# UniverScan Cross-Platform Multi-Target Build Script (PowerShell)
 # Builds standalone static binaries for Windows, macOS (Apple Silicon & Intel), and Linux.
 
 $ErrorActionPreference = "Stop"
@@ -7,15 +7,15 @@ $RootDir = Split-Path -Parent $PSScriptRoot
 $BinDir = Join-Path $RootDir "bin"
 $DistDir = Join-Path $RootDir "dist"
 
-Write-Host "=== Building PrismScan Standalone Binaries ===" -ForegroundColor Cyan
+Write-Host "=== Building UniverScan Standalone Binaries ===" -ForegroundColor Cyan
 Write-Host "Project Root: $RootDir"
 
 if (-not (Test-Path $BinDir)) {
     New-Item -ItemType Directory -Force -Path $BinDir | Out-Null
 }
 
-# Ensure web assets are synced into cmd/prismscan/web for go:embed
-$CmdWebDir = Join-Path $RootDir "cmd\prismscan\web"
+# Ensure web assets are synced into cmd/universcan/web for go:embed
+$CmdWebDir = Join-Path $RootDir "cmd\universcan\web"
 if (-not (Test-Path $CmdWebDir)) {
     New-Item -ItemType Directory -Force -Path $CmdWebDir | Out-Null
 }
@@ -25,35 +25,35 @@ Copy-Item -Recurse -Force (Join-Path $RootDir "web\*") $CmdWebDir
 $LdFlags = "-s -w -X main.Version=0.1.0"
 
 # 1. Windows x86_64
-Write-Host "--> Compiling Windows x86_64 (bin/prismscan.exe)..." -ForegroundColor Yellow
+Write-Host "--> Compiling Windows x86_64 (bin/universcan.exe)..." -ForegroundColor Yellow
 $env:GOOS = "windows"
 $env:GOARCH = "amd64"
 $env:CGO_ENABLED = "0"
-go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/prismscan.exe" "$RootDir/cmd/prismscan"
+go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan.exe" "$RootDir/cmd/universcan"
 if ($LASTEXITCODE -ne 0) { throw "Windows build failed" }
 
 # 2. macOS Apple Silicon (ARM64)
-Write-Host "--> Compiling macOS Apple Silicon (bin/prismscan-darwin-arm64)..." -ForegroundColor Yellow
+Write-Host "--> Compiling macOS Apple Silicon (bin/universcan-darwin-arm64)..." -ForegroundColor Yellow
 $env:GOOS = "darwin"
 $env:GOARCH = "arm64"
 $env:CGO_ENABLED = "0"
-go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/prismscan-darwin-arm64" "$RootDir/cmd/prismscan"
+go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan-darwin-arm64" "$RootDir/cmd/universcan"
 if ($LASTEXITCODE -ne 0) { throw "macOS ARM64 build failed" }
 
 # 3. macOS Intel (x86_64)
-Write-Host "--> Compiling macOS Intel (bin/prismscan-darwin-amd64)..." -ForegroundColor Yellow
+Write-Host "--> Compiling macOS Intel (bin/universcan-darwin-amd64)..." -ForegroundColor Yellow
 $env:GOOS = "darwin"
 $env:GOARCH = "amd64"
 $env:CGO_ENABLED = "0"
-go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/prismscan-darwin-amd64" "$RootDir/cmd/prismscan"
+go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan-darwin-amd64" "$RootDir/cmd/universcan"
 if ($LASTEXITCODE -ne 0) { throw "macOS AMD64 build failed" }
 
 # 4. Linux x86_64
-Write-Host "--> Compiling Linux x86_64 (bin/prismscan-linux-amd64)..." -ForegroundColor Yellow
+Write-Host "--> Compiling Linux x86_64 (bin/universcan-linux-amd64)..." -ForegroundColor Yellow
 $env:GOOS = "linux"
 $env:GOARCH = "amd64"
 $env:CGO_ENABLED = "0"
-go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/prismscan-linux-amd64" "$RootDir/cmd/prismscan"
+go build -buildvcs=false -ldflags $LdFlags -o "$BinDir/universcan-linux-amd64" "$RootDir/cmd/universcan"
 if ($LASTEXITCODE -ne 0) { throw "Linux build failed" }
 
 # Reset environment variables
@@ -90,7 +90,7 @@ if ($Iscc) {
     & $Iscc $IssScript
     Write-Host "Windows Installer generated in $DistDir\windows" -ForegroundColor Green
 } else {
-    Write-Host "`n[Notice] Inno Setup compiler (ISCC) not found on PATH. To build PrismScan-Setup.exe, install Inno Setup 6 and compile packaging\windows\installer.iss." -ForegroundColor Gray
+    Write-Host "`n[Notice] Inno Setup compiler (ISCC) not found on PATH. To build UniverScan-Setup.exe, install Inno Setup 6 and compile packaging\windows\installer.iss." -ForegroundColor Gray
 }
 
 Write-Host "`nBuild complete successfully!" -ForegroundColor Green

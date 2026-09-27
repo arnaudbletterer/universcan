@@ -111,9 +111,9 @@ func (c *WSDClient) ScanPage(
     <sca:CreateScanJobRequest>
       <sca:ScanTicket>
         <sca:JobDescription>
-          <sca:JobName>PrismScan Native Job</sca:JobName>
+          <sca:JobName>UniverScan Job</sca:JobName>
           <sca:JobOriginatingUserName>User</sca:JobOriginatingUserName>
-          <sca:JobInformation>PrismScan Native</sca:JobInformation>
+          <sca:JobInformation>UniverScan</sca:JobInformation>
         </sca:JobDescription>
         <sca:DocumentParameters>
           <sca:Format>jfif</sca:Format>

@@ -34,8 +34,8 @@ jobs:
       - name: Sync web assets
         shell: bash
         run: |
-          mkdir -p cmd/prismscan/web
-          cp -r web/* cmd/prismscan/web/
+          mkdir -p cmd/universcan/web
+          cp -r web/* cmd/universcan/web/
 
       - name: Install Inno Setup
         run: |
@@ -52,7 +52,7 @@ jobs:
         run: |
           mkdir bin -ErrorAction SilentlyContinue
           $tag = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { '${{ github.event.inputs.tag_name }}' }
-          go build -buildvcs=false -ldflags "-s -w -X main.Version=$tag" -o bin/prismscan.exe ./cmd/prismscan
+          go build -buildvcs=false -ldflags "-s -w -X main.Version=$tag" -o bin/universcan.exe ./cmd/universcan
 
       - name: Build Inno Setup Installer
         run: |
@@ -61,15 +61,15 @@ jobs:
 
       - name: Create Portable Zip Archive
         run: |
-          Compress-Archive -Path bin/prismscan.exe -DestinationPath dist/windows/prismscan-windows-x86_64.zip -Force
+          Compress-Archive -Path bin/universcan.exe -DestinationPath dist/windows/universcan-windows-x86_64.zip -Force
 
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-release
           path: |
-            dist/windows/PrismScan-Setup.exe
-            dist/windows/prismscan-windows-x86_64.zip
+            dist/windows/UniverScan-Setup.exe
+            dist/windows/universcan-windows-x86_64.zip
           retention-days: 1
 
   # ============================================================================
@@ -90,8 +90,8 @@ jobs:
 
       - name: Sync web assets
         run: |
-          mkdir -p cmd/prismscan/web
-          cp -r web/* cmd/prismscan/web/
+          mkdir -p cmd/universcan/web
+          cp -r web/* cmd/universcan/web/
 
       - name: Compile macOS Binaries (ARM64 Apple Silicon + AMD64 Intel)
         run: |
@@ -100,10 +100,10 @@ jobs:
           LDFLAGS="-s -w -X main.Version=${tag}"
           
           echo "Compiling darwin/arm64..."
-          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/prismscan-darwin-arm64 ./cmd/prismscan
+          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/universcan-darwin-arm64 ./cmd/universcan
           
           echo "Compiling darwin/amd64..."
-          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/prismscan-darwin-amd64 ./cmd/prismscan
+          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/universcan-darwin-amd64 ./cmd/universcan
 
       - name: Package macOS App Bundle and DMG
         run: |
@@ -115,8 +115,8 @@ jobs:
         with:
           name: macos-release
           path: |
-            dist/macos/PrismScan-macOS.zip
-            dist/macos/PrismScan-macOS.dmg
+            dist/macos/UniverScan-macOS.zip
+            dist/macos/UniverScan-macOS.dmg
           retention-days: 1
 
   # ============================================================================
@@ -137,15 +137,15 @@ jobs:
 
       - name: Sync web assets
         run: |
-          mkdir -p cmd/prismscan/web
-          cp -r web/* cmd/prismscan/web/
+          mkdir -p cmd/universcan/web
+          cp -r web/* cmd/universcan/web/
 
       - name: Compile Linux Binary
         run: |
           mkdir -p bin
           tag="${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.tag_name }}"
           LDFLAGS="-s -w -X main.Version=${tag}"
-          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/prismscan-linux-amd64 ./cmd/prismscan
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/universcan-linux-amd64 ./cmd/universcan
 
       - name: Package Linux Bundle
         run: |
@@ -157,7 +157,7 @@ jobs:
         with:
           name: linux-release
           path: |
-            dist/linux/prismscan-linux-x86_64.tar.gz
+            dist/linux/universcan-linux-x86_64.tar.gz
           retention-days: 1
 
   # ============================================================================
@@ -185,14 +185,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.tag_name }}
-          name: PrismScan ${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.tag_name }} — Universal Driverless Scanner
+          name: UniverScan ${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.tag_name }} — Universal Driverless Scanner
           draft: false
           prerelease: false
           generate_release_notes: true
           files: |
-            release-artifacts/PrismScan-Setup.exe
-            release-artifacts/prismscan-windows-x86_64.zip
-            release-artifacts/PrismScan-macOS.zip
-            release-artifacts/PrismScan-macOS.dmg
-            release-artifacts/prismscan-linux-x86_64.tar.gz
+            release-artifacts/UniverScan-Setup.exe
+            release-artifacts/universcan-windows-x86_64.zip
+            release-artifacts/UniverScan-macOS.zip
+            release-artifacts/UniverScan-macOS.dmg
+            release-artifacts/universcan-linux-x86_64.tar.gz
             release-artifacts/SHA256SUMS.txt

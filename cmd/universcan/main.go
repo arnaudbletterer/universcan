@@ -16,8 +16,8 @@ import (
 	"syscall"
 	"time"
 
-	"prismscan/pkg/api"
-	"prismscan/pkg/storage"
+	"universcan/pkg/api"
+	"universcan/pkg/storage"
 )
 
 //go:embed all:web
@@ -31,7 +31,7 @@ func main() {
 	flag.Parse()
 
 	log.Println("=====================================================")
-	log.Println("  PrismScan — Universal Native Document Scanner v0.1.0")
+	log.Println("  UniverScan — Universal Document Scanner v0.1.0")
 	log.Println("=====================================================")
 
 	// Extract "web" subdirectory from embedded filesystem
@@ -78,7 +78,7 @@ func main() {
 	// Launch HTTP server in background goroutine
 	serverErrChan := make(chan error, 1)
 	go func() {
-		log.Printf("PrismScan server running at: %s", url)
+		log.Printf("UniverScan server running at: %s", url)
 		if err := httpServer.Serve(listener); err != nil && err != http.ErrServerClosed {
 			serverErrChan <- err
 		}
@@ -97,7 +97,7 @@ func main() {
 	case err := <-serverErrChan:
 		log.Fatalf("Server error: %v", err)
 	case sig := <-sigChan:
-		log.Printf("Received signal %v, shutting down PrismScan gracefully...", sig)
+		log.Printf("Received signal %v, shutting down UniverScan gracefully...", sig)
 	}
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -106,7 +106,7 @@ func main() {
 	if err := httpServer.Shutdown(shutdownCtx); err != nil {
 		log.Printf("HTTP server shutdown error: %v", err)
 	} else {
-		log.Println("PrismScan exited cleanly.")
+		log.Println("UniverScan exited cleanly.")
 	}
 }
 

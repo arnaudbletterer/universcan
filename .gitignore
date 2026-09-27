@@ -5,7 +5,7 @@ dist/
 *.dll
 *.so
 *.dylib
-cmd/prismscan/web/
+cmd/universcan/web/
 
 # OS specific files
 .DS_Store

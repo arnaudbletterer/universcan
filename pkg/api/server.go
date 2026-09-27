@@ -15,10 +15,10 @@ import (
 	"sync"
 	"time"
 
-	"prismscan/pkg/diagnostic"
-	"prismscan/pkg/pdf"
-	"prismscan/pkg/scanner"
-	"prismscan/pkg/storage"
+	"universcan/pkg/diagnostic"
+	"universcan/pkg/pdf"
+	"universcan/pkg/scanner"
+	"universcan/pkg/storage"
 )
 
 // ScanJobStatus tracks live scan operation status.
@@ -46,7 +46,7 @@ type FullStatus struct {
 	ScanJob       ScanJobStatus `json:"scan_job"`
 }
 
-// Server provides the REST API for PrismScan.
+// Server provides the REST API for UniverScan.
 type Server struct {
 	SessionManager   *storage.SessionManager
 	SettingsDir      string

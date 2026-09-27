@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=UniverScan
+GenericName=Universal Document Scanner
+Comment=Universal, driverless document scanner for everyone (eSCL, AirScan, WSD, Samsung)
+Exec=universcan
+Icon=universcan
+Terminal=false
+Categories=Graphics;Scanning;Office;
+Keywords=scan;scanner;document;pdf;duplex;universal;airscan;escl;samsung;mfp;
+StartupNotify=true
+StartupWMClass=universcan

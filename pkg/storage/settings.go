@@ -23,13 +23,21 @@ var (
 	settingsMu sync.RWMutex
 )
 
-// GetDefaultSettingsDir returns ~/.prism_scan.
+// GetDefaultSettingsDir returns ~/.universcan (falling back to ~/.prism_scan if already present).
 func GetDefaultSettingsDir() string {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		home = "."
 	}
-	return filepath.Join(home, ".prism_scan")
+	uniDir := filepath.Join(home, ".universcan")
+	if _, err := os.Stat(uniDir); err == nil {
+		return uniDir
+	}
+	prismDir := filepath.Join(home, ".prism_scan")
+	if _, err := os.Stat(prismDir); err == nil {
+		return prismDir
+	}
+	return uniDir
 }
 
 // DefaultSettings returns the initial default configuration.
@@ -48,7 +56,7 @@ func DefaultSettings() Settings {
 	}
 }
 
-// LoadSettings reads ~/.prism_scan/settings.json or returns defaults.
+// LoadSettings reads ~/.universcan/settings.json (or ~/.prism_scan/settings.json fallback) or returns defaults.
 func LoadSettings(configDir string) Settings {
 	settingsMu.RLock()
 	defer settingsMu.RUnlock()
@@ -96,7 +104,7 @@ func LoadSettings(configDir string) Settings {
 	return loaded
 }
 
-// SaveSettings writes updated settings to ~/.prism_scan/settings.json.
+// SaveSettings writes updated settings to ~/.universcan/settings.json (or active configDir).
 func SaveSettings(newSettings Settings, configDir string) (Settings, error) {
 	settingsMu.Lock()
 	defer settingsMu.Unlock()

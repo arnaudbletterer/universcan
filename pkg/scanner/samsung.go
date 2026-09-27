@@ -115,7 +115,7 @@ func (d *SamsungScannerDriver) GetStatus(ctx context.Context) (*ScannerStatus, e
 	syncThruURL := fmt.Sprintf("http://%s/sws/app/information/home/home.json", d.IP)
 	req, err := http.NewRequestWithContext(ctx, "GET", syncThruURL, nil)
 	if err == nil {
-		req.Header.Set("User-Agent", "PrismScan/2.0")
+		req.Header.Set("User-Agent", "UniverScan/0.1.0")
 		resp, err := d.HTTPClient.Do(req)
 		if err == nil {
 			status.Online = true

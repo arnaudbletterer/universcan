@@ -1,5 +1,5 @@
 /**
- * PrismScan — Modern, Sober, Universal Zero-Dependency Scanner Client
+ * UniverScan — Modern, Sober, Universal Zero-Dependency Scanner Client
  * Aesthetic: Swiss Typographic / Apple HIG / Dieter Rams
  * Vanilla ES6, 100% Offline, No CDN dependencies.
  */
@@ -9,7 +9,7 @@
 
   // State Management
   const state = {
-    scannerIp: localStorage.getItem('prism_scanner_ip') || '192.168.1.50',
+    scannerIp: localStorage.getItem('universcan_ip') || localStorage.getItem('prism_scanner_ip') || '192.168.1.50',
     scannerModel: 'Samsung M2070 Series',
     activeProtocol: 'Auto',
     online: false,
@@ -28,7 +28,7 @@
     duplexPhase: 0,     // 0 = idle, 1 = side 1 scanning/done, 2 = side 2 scanning
     previewIndex: -1,
     previewZoom: 1.0,
-    theme: localStorage.getItem('prism_theme') || 'light',
+    theme: localStorage.getItem('universcan_theme') || localStorage.getItem('prism_theme') || 'light',
     latestDiagnosticReport: null,
     latestDiagnosticMarkdown: ''
   };
@@ -215,7 +215,7 @@
 
   function applyTheme(theme) {
     state.theme = theme;
-    localStorage.setItem('prism_theme', theme);
+    localStorage.setItem('universcan_theme', theme);
     els.html.setAttribute('data-theme', theme);
     if (els.themeToggle) {
       els.themeToggle.title = theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme';
@@ -241,7 +241,7 @@
   // Scanner Selection & Discovery
   async function selectScanner(ip, name = '', protocol = '') {
     state.scannerIp = ip;
-    localStorage.setItem('prism_scanner_ip', ip);
+    localStorage.setItem('universcan_ip', ip);
     if (name) state.scannerModel = name;
     if (protocol) state.activeProtocol = protocol;
 
@@ -445,7 +445,7 @@
 
     // Markdown Report Formatting
     const md = [
-      `# PrismScan Hardware Diagnostic Report`,
+      `# UniverScan Hardware Diagnostic Report`,
       `**Generated:** ${data.timestamp || new Date().toISOString()}`,
       `**Target IP:** \`${data.target_ip}\``,
       `**Device Model:** ${data.device_info?.model || 'Unknown'}`,
@@ -466,7 +466,7 @@
       ``,
       `## Client Environment`,
       `- **Platform:** \`${data.client_platform || navigator.userAgent}\``,
-      `- **Application Version:** PrismScan Native 0.1.0`
+      `- **Application Version:** UniverScan 0.1.0`
     ].join('\n');
 
     state.latestDiagnosticMarkdown = data.markdown_summary || md;
@@ -498,7 +498,7 @@
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(reportObj, null, 2));
     const dlAnchor = document.createElement('a');
     dlAnchor.setAttribute("href", dataStr);
-    dlAnchor.setAttribute("download", `prismscan_diagnostic_${state.scannerIp.replace(/\./g, '_')}.json`);
+    dlAnchor.setAttribute("download", `universcan_diagnostic_${state.scannerIp.replace(/\./g, '_')}.json`);
     document.body.appendChild(dlAnchor);
     dlAnchor.click();
     dlAnchor.remove();

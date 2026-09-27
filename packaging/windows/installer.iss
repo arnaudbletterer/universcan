@@ -1,15 +1,15 @@
-; Inno Setup Script for PrismScan Native Installer
-; Builds a clean, single-file installer: PrismScan-Setup.exe
+; Inno Setup Script for UniverScan Native Installer
+; Builds a clean, single-file installer: UniverScan-Setup.exe
 ; Supports both Administrative (Program Files) and Standard User (local AppData) installs.
 
-#define MyAppName "PrismScan"
+#define MyAppName "UniverScan"
 #define MyAppVersion "0.1.0"
-#define MyAppPublisher "PrismScan"
-#define MyAppURL "https://github.com/abletterer/prism-scan"
-#define MyAppExeName "prismscan.exe"
+#define MyAppPublisher "UniverScan"
+#define MyAppURL "https://github.com/abletterer/universcan"
+#define MyAppExeName "universcan.exe"
 
 [Setup]
-; Unique GUID for PrismScan
+; Unique GUID for UniverScan
 AppId={{8B5C06F7-4DF8-4E83-9B67-42E15BF8B8DF}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -23,7 +23,7 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=..\..\dist\windows
-OutputBaseFilename=PrismScan-Setup
+OutputBaseFilename=UniverScan-Setup
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
@@ -49,4 +49,4 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
-Type: filesandordirs; Name: "{localappdata}\.prism_scan"
+Type: filesandordirs; Name: "{localappdata}\.universcan"

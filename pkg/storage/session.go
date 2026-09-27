@@ -45,7 +45,7 @@ type SessionManager struct {
 	mu           sync.RWMutex
 }
 
-// NewSessionManager creates a SessionManager rooted in baseDir (defaults to ~/.prism_scan).
+// NewSessionManager creates a SessionManager rooted in baseDir (defaults to ~/.universcan).
 func NewSessionManager(baseDir string) *SessionManager {
 	if baseDir == "" {
 		baseDir = GetDefaultSettingsDir()

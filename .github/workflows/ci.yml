@@ -28,11 +28,11 @@ jobs:
       - name: Sync web assets for embed
         shell: bash
         run: |
-          mkdir -p cmd/prismscan/web
-          cp -r web/* cmd/prismscan/web/
+          mkdir -p cmd/universcan/web
+          cp -r web/* cmd/universcan/web/
 
       - name: Run Go Unit Tests
         run: go test -v ./...
 
       - name: Verify Binary Compilation
-        run: go build -v -buildvcs=false -o prismscan-test ./cmd/prismscan
+        run: go build -v -buildvcs=false -o universcan-test ./cmd/universcan
