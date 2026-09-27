@@ -7,6 +7,7 @@ We want scanning to be completely stress-free. If something isn't working as exp
 ## 1. The Scanner Says "Sleeping" 💤
 
 Scanners enter power-saving sleep mode after a few minutes of inactivity to save electricity.
+
 - **Solution:** Click the yellow **⚡ Wake Up Scanner** button in UniverScan.
 - Alternatively, walk over to your scanner and press any physical button (such as the *Power*, *Cancel*, or *Menu* button) to wake it up. Once the small screen lights up, UniverScan will say **Ready**.
 
@@ -15,6 +16,7 @@ Scanners enter power-saving sleep mode after a few minutes of inactivity to save
 ## 2. "Looking for Scanner..." or Scanner Not Found 🔍
 
 If UniverScan cannot find your scanner on the network:
+
 1. **Check the power:** Make sure your scanner is turned on and plugged into the wall.
 2. **Check Wi-Fi:** Ensure your computer and your scanner are connected to the same home Wi-Fi network (or router).
 3. **Enter the Address Directly:**

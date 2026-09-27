@@ -32,6 +32,7 @@ You don't need to understand these technologies to use UniverScan, but here is w
 ## Doesn't See Your Scanner?
 
 If your scanner is connected to your Wi-Fi or network cable but UniverScan doesn't see it immediately:
+
 1. Click the scanner name at the top of the UniverScan window.
 2. Type in your scanner's IP address (for example, `192.168.1.50`). You can find this address on your printer's small screen under *Network Information* or *Wi-Fi Setup*.
 3. Click **Connect**. UniverScan will connect to it and remember it for next time!

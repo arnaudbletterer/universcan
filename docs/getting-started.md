@@ -4,58 +4,76 @@ UniverScan is designed so that anyone can download it and start scanning in less
 
 ---
 
-## <img src="../assets/icons/windows.svg" width="22" height="22" alt="Windows" style="vertical-align: middle; margin-right: 6px;"> Windows (11, 10, 8, & Windows 7)
+## Windows (11, 10, 8, & Windows 7)
 
-UniverScan supports both modern 64-bit PCs and older 32-bit laptops/desktops from over a decade ago.
+<p style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 0.5rem;">
+  <img src="assets/icons/windows.svg" width="20" height="20" alt="Windows">
+  Supports 64-bit and 32-bit Windows PCs (Windows 11, 10, 8, and Windows 7 SP1)
+</p>
 
-1. **Download the Installer:**
-   - Download [`UniverScan-Setup.exe`](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-Setup.exe).
-2. **Double-click the installer:**
-   - Click **Next**, then **Install**.
-   - You do **not** need an Administrator password; it installs directly into your user programs folder.
-3. **Start Scanning:**
-   - UniverScan will open automatically, and you will have a handy icon right on your Desktop!
+1. **Download the Installer**  
+   Download the [**UniverScan-Setup.exe**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-Setup.exe) installer.
+
+2. **Install in One Click**  
+   Double-click the installer, then click **Next** and **Install**. You do **not** need an Administrator password; it installs directly into your user apps folder.
+
+3. **Start Scanning**  
+   UniverScan will open automatically, and you will have a handy icon right on your Desktop ready to use.
 
 > **Portable Option (No Installation):**  
-> If you cannot install software on your computer (for example at school or work), download `universcan-windows-x86_64.zip` (or `universcan-windows-i386.zip` for 32-bit systems). Extract it and double-click `universcan.exe` directly!
+> If you cannot install software on your computer (for example at school or on a restricted work computer), download [**universcan-windows-x86_64.zip**](https://github.com/arnaudbletterer/universcan/releases/latest) (or `universcan-windows-i386.zip` for 32-bit PCs). Extract it and run `universcan.exe` directly!
 
 ---
 
-## <img src="../assets/icons/apple.svg" width="22" height="22" alt="Apple" style="vertical-align: middle; margin-right: 6px;"> Apple Mac (macOS)
+## Apple Mac (macOS)
 
-Compatible with both modern Apple Silicon Macs (M1, M2, M3, M4) and older Intel Macs.
+<p style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 0.5rem;">
+  <img src="assets/icons/apple.svg" width="20" height="20" alt="Apple macOS">
+  Supports Apple Silicon (M1, M2, M3, M4) and Intel Macs
+</p>
 
-1. **Download:**
-   - Download [`UniverScan-macOS.dmg`](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) (or `UniverScan-macOS.zip`).
-2. **Install:**
-   - Double-click the `.dmg` file.
-   - Drag **UniverScan** into your **Applications** folder.
-3. **Launch:**
-   - Open UniverScan from your Applications or Launchpad.
+1. **Download the Mac Package**  
+   Download the [**UniverScan-macOS.pkg**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.pkg) 1-click installer, or the [**UniverScan-macOS.dmg**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) disk image.
+
+2. **Install in Your Applications Folder**  
+   Choose your preferred installer:
+    - **Using `.pkg` (Recommended):** Double-click `UniverScan-macOS.pkg` and follow the quick wizard (*Continue → Install*). It installs automatically into `/Applications`.
+    - **Using `.dmg`:** Double-click `UniverScan-macOS.dmg` and drag the **UniverScan** icon into the **Applications** folder.
+
+3. **Launch UniverScan**  
+   Open UniverScan from your **Applications** folder or Launchpad.
 
 ---
 
-## <img src="../assets/icons/linux.svg" width="22" height="22" alt="Linux" style="vertical-align: middle; margin-right: 6px;"> Linux (Ubuntu, Debian, Fedora, Arch, Raspberry Pi)
+## Linux (Ubuntu, Debian, Fedora, Arch, Raspberry Pi)
 
-UniverScan comes as a 100% self-contained static executable with zero external dependencies or library locks.
+<p style="display: flex; align-items: center; gap: 8px; font-weight: 600; margin-top: 0.5rem;">
+  <img src="assets/icons/linux.svg" width="20" height="20" alt="Linux">
+  Self-contained static executable with zero external library locks
+</p>
 
-1. **Download:**
-   - Download `universcan-linux-x86_64.tar.gz` (for standard 64-bit PCs).
-   - Or `universcan-linux-i386.tar.gz` (for older 32-bit computers).
-   - Or `universcan-linux-arm64.tar.gz` (for Raspberry Pi 3/4/5).
-2. **Extract & Run:**
-   ```bash
-   tar -xvf universcan-linux-x86_64.tar.gz
-   ./universcan-linux-amd64
-   ```
-3. UniverScan starts instantly and opens your browser window.
+1. **Download the Package for Your System**  
+   Select the download for your computer architecture:
+    - [**universcan-linux-x86_64.tar.gz**](https://github.com/arnaudbletterer/universcan/releases/latest) for standard 64-bit PCs
+    - [**universcan-linux-i386.tar.gz**](https://github.com/arnaudbletterer/universcan/releases/latest) for older 32-bit computers
+    - [**universcan-linux-arm64.tar.gz**](https://github.com/arnaudbletterer/universcan/releases/latest) for Raspberry Pi 3/4/5
+
+2. **Extract and Run**  
+   Open your terminal in your download folder and run:
+
+        tar -xvf universcan-linux-x86_64.tar.gz
+        ./universcan-linux-amd64
+
+3. **Start Scanning**  
+   UniverScan starts instantly and opens your browser window.
 
 ---
 
 ## Connecting Your Scanner
 
 When you open UniverScan for the first time:
+
 1. Make sure your scanner is turned on and connected to the same Wi-Fi or home network as your computer.
 2. UniverScan will automatically look for your scanner.
 3. Once found, you will see a green light: **Connected (Ready)**.
-4. If your scanner has a specific network address (like `192.168.1.50`), you can click the scanner name at the top to enter it in seconds.
+4. If your scanner is not detected automatically, click the scanner button at the top, type your scanner's IP address (e.g. `192.168.1.50`), and click **Connect**.

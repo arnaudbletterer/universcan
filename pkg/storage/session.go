@@ -163,7 +163,7 @@ func (sm *SessionManager) DeletePage(id string) bool {
 }
 
 // ReorderPages re-sequences the pages based on the provided IDs.
-func (sm *SessionManager) ReorderPages(newOrder []string) {
+func (sm *SessionManager) ReorderPages(newOrder []string) bool {
 	sm.mu.Lock()
 	defer sm.mu.Unlock()
 
@@ -177,7 +177,47 @@ func (sm *SessionManager) ReorderPages(newOrder []string) {
 	if len(valid) == len(sm.order) {
 		sm.order = valid
 		sm.saveToDiskLocked()
+		return true
 	}
+	return false
+}
+
+// InterleaveDuplex calculates the correct logical page order for 2-sided (duplex) scanning.
+// Pass 1 scanned sheet fronts (F1, F2, ... Fn).
+// Pass 2 scanned sheet backs from the exit tray turned into the feeder tray (Rn, Rn-1, ... R1).
+// Pass 2 pages are reversed to restore sheet order (R1, ... Rn), then interleaved with Pass 1.
+func InterleaveDuplex(baseIDs, pass1IDs, pass2IDs []string) []string {
+	reversedPass2 := make([]string, len(pass2IDs))
+	for i, id := range pass2IDs {
+		reversedPass2[len(pass2IDs)-1-i] = id
+	}
+
+	maxLen := len(pass1IDs)
+	if len(reversedPass2) > maxLen {
+		maxLen = len(reversedPass2)
+	}
+
+	interleaved := make([]string, 0, len(pass1IDs)+len(reversedPass2))
+	for i := 0; i < maxLen; i++ {
+		if i < len(pass1IDs) {
+			interleaved = append(interleaved, pass1IDs[i])
+		}
+		if i < len(reversedPass2) {
+			interleaved = append(interleaved, reversedPass2[i])
+		}
+	}
+
+	result := make([]string, 0, len(baseIDs)+len(interleaved))
+	result = append(result, baseIDs...)
+	result = append(result, interleaved...)
+	return result
+}
+
+// InterleaveDuplexPages calculates the duplex order and applies it to the active session.
+func (sm *SessionManager) InterleaveDuplexPages(baseIDs, pass1IDs, pass2IDs []string) ([]string, bool) {
+	newOrder := InterleaveDuplex(baseIDs, pass1IDs, pass2IDs)
+	ok := sm.ReorderPages(newOrder)
+	return newOrder, ok
 }
 
 // Clear removes all pages from the active session.

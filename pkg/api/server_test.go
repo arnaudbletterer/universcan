@@ -120,6 +120,60 @@ func TestAPIServerEndpoints(t *testing.T) {
 	}
 }
 
+func TestAPIServerReorderAndDuplex(t *testing.T) {
+	tempDir := t.TempDir()
+	srv := NewServer(tempDir, nil)
+	handler := srv.Routes()
+
+	img := createSampleImage(50, 50)
+	p1 := srv.SessionManager.AddPage(img)
+	p2 := srv.SessionManager.AddPage(img)
+	p3 := srv.SessionManager.AddPage(img)
+	p4 := srv.SessionManager.AddPage(img)
+
+	// Test 1: Reorder with "order"
+	reorderPayload := bytes.NewBufferString(`{"order": ["` + p4.ID + `", "` + p3.ID + `", "` + p2.ID + `", "` + p1.ID + `"]}`)
+	req := httptest.NewRequest("POST", "/api/pages/reorder", reorderPayload)
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("POST /api/pages/reorder with order returned status %d: %s", rec.Code, rec.Body.String())
+	}
+	if srv.SessionManager.ListPages()[0].ID != p4.ID {
+		t.Fatalf("expected p4 first after reorder")
+	}
+
+	// Test 2: Reorder with "page_ids" (supports client drag-and-drop format)
+	reorderPayload2 := bytes.NewBufferString(`{"page_ids": ["` + p1.ID + `", "` + p2.ID + `", "` + p3.ID + `", "` + p4.ID + `"]}`)
+	req = httptest.NewRequest("POST", "/api/pages/reorder", reorderPayload2)
+	req.Header.Set("Content-Type", "application/json")
+	rec = httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("POST /api/pages/reorder with page_ids returned status %d: %s", rec.Code, rec.Body.String())
+	}
+	if srv.SessionManager.ListPages()[0].ID != p1.ID {
+		t.Fatalf("expected p1 first after reorder")
+	}
+
+	// Test 3: Duplex Interleave endpoint
+	// Pass 1 = [p1, p3], Pass 2 = [p4, p2] (scanned in reverse sheet order)
+	duplexPayload := bytes.NewBufferString(`{"pass1_ids": ["` + p1.ID + `", "` + p3.ID + `"], "pass2_ids": ["` + p4.ID + `", "` + p2.ID + `"]}`)
+	req = httptest.NewRequest("POST", "/api/pages/duplex-interleave", duplexPayload)
+	req.Header.Set("Content-Type", "application/json")
+	rec = httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("POST /api/pages/duplex-interleave returned status %d: %s", rec.Code, rec.Body.String())
+	}
+
+	pages := srv.SessionManager.ListPages()
+	if len(pages) != 4 || pages[0].ID != p1.ID || pages[1].ID != p2.ID || pages[2].ID != p3.ID || pages[3].ID != p4.ID {
+		t.Fatalf("unexpected page sequence after duplex interleave: %+v", pages)
+	}
+}
+
 func filepathToSlash(s string) string {
 	var b []byte
 	for i := 0; i < len(s); i++ {

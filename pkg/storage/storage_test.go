@@ -130,3 +130,76 @@ func TestSessionManagerProjects(t *testing.T) {
 		t.Errorf("expected 1 page after reloading project 1, got %d", sm.TotalPages())
 	}
 }
+
+func TestInterleaveDuplex(t *testing.T) {
+	// Case 1: 2 sheets (4 pages)
+	res1 := InterleaveDuplex(nil, []string{"P1", "P3"}, []string{"P4", "P2"})
+	expected1 := []string{"P1", "P2", "P3", "P4"}
+	if !slicesEqual(res1, expected1) {
+		t.Errorf("case 1 failed: got %v, expected %v", res1, expected1)
+	}
+
+	// Case 2: 3 sheets (6 pages)
+	res2 := InterleaveDuplex(nil, []string{"P1", "P3", "P5"}, []string{"P6", "P4", "P2"})
+	expected2 := []string{"P1", "P2", "P3", "P4", "P5", "P6"}
+	if !slicesEqual(res2, expected2) {
+		t.Errorf("case 2 failed: got %v, expected %v", res2, expected2)
+	}
+
+	// Case 3: Pre-existing base pages
+	res3 := InterleaveDuplex([]string{"baseA", "baseB"}, []string{"P1", "P3"}, []string{"P4", "P2"})
+	expected3 := []string{"baseA", "baseB", "P1", "P2", "P3", "P4"}
+	if !slicesEqual(res3, expected3) {
+		t.Errorf("case 3 failed: got %v, expected %v", res3, expected3)
+	}
+
+	// Case 4: Unequal pages (3 fronts, 2 backs)
+	res4 := InterleaveDuplex(nil, []string{"P1", "P3", "P5"}, []string{"P4", "P2"})
+	expected4 := []string{"P1", "P2", "P3", "P4", "P5"}
+	if !slicesEqual(res4, expected4) {
+		t.Errorf("case 4 failed: got %v, expected %v", res4, expected4)
+	}
+
+	// Case 5: Empty pass 2
+	res5 := InterleaveDuplex(nil, []string{"P1", "P3"}, nil)
+	expected5 := []string{"P1", "P3"}
+	if !slicesEqual(res5, expected5) {
+		t.Errorf("case 5 failed: got %v, expected %v", res5, expected5)
+	}
+}
+
+func TestSessionManagerInterleaveDuplex(t *testing.T) {
+	tempDir := t.TempDir()
+	sm := NewSessionManager(tempDir)
+
+	p1 := sm.AddPage(createTestImage(20, 20))
+	p3 := sm.AddPage(createTestImage(20, 20))
+	p4 := sm.AddPage(createTestImage(20, 20))
+	p2 := sm.AddPage(createTestImage(20, 20))
+
+	order, ok := sm.InterleaveDuplexPages(nil, []string{p1.ID, p3.ID}, []string{p4.ID, p2.ID})
+	if !ok {
+		t.Fatalf("interleave failed")
+	}
+	expected := []string{p1.ID, p2.ID, p3.ID, p4.ID}
+	if !slicesEqual(order, expected) {
+		t.Errorf("interleave order mismatch: got %v, expected %v", order, expected)
+	}
+
+	pages := sm.ListPages()
+	if len(pages) != 4 || pages[0].ID != p1.ID || pages[1].ID != p2.ID || pages[2].ID != p3.ID || pages[3].ID != p4.ID {
+		t.Errorf("session list pages mismatch after duplex interleave: %+v", pages)
+	}
+}
+
+func slicesEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}

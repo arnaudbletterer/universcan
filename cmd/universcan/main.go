@@ -34,10 +34,17 @@ func main() {
 	log.Println("  UniverScan — Universal Document Scanner v0.1.0")
 	log.Println("=====================================================")
 
-	// Extract "web" subdirectory from embedded filesystem
-	webFS, err := fs.Sub(embeddedWebFS, "web")
-	if err != nil {
-		log.Fatalf("Failed to initialize embedded web filesystem: %v", err)
+	// Prioritize local "web" directory if present (ensures live frontend updates during local run)
+	var webFS fs.FS
+	if fi, err := os.Stat("web"); err == nil && fi.IsDir() {
+		log.Println("Serving web UI assets directly from local disk (./web)...")
+		webFS = os.DirFS("web")
+	} else {
+		sub, err := fs.Sub(embeddedWebFS, "web")
+		if err != nil {
+			log.Fatalf("Failed to initialize embedded web filesystem: %v", err)
+		}
+		webFS = sub
 	}
 
 	cfgDir := *configDir

@@ -196,7 +196,7 @@ def main():
         page.click("#btnSides2")
         page.evaluate("() => document.getElementById('duplexModal').classList.add('open')")
         page.wait_for_selector("#duplexModal.open", timeout=3000)
-        page.wait_for_timeout(300)
+        page.wait_for_timeout(800)
         print("Capturing 04_duplex_guide.png...")
         shot4 = screenshots_dir / "04_duplex_guide.png"
         page.screenshot(path=str(shot4))

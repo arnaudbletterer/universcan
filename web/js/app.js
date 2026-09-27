@@ -42,6 +42,8 @@
     scanProgress: 0,
     scanMessage: 'Idle',
     duplexPhase: 0,     // 0 = idle, 1 = side 1 scanning/done, 2 = side 2 scanning
+    duplexBasePageIds: [],
+    duplexPass1PageIds: [],
     previewIndex: -1,
     previewZoom: 1.0,
     theme: safeGet('universcan_theme', safeGet('prism_theme', 'light')),
@@ -570,7 +572,11 @@
   }
 
   // Telemetry Polling
+  let isPolling = false;
+  let pollTimer = null;
   async function pollStatus() {
+    if (isPolling) return;
+    isPolling = true;
     try {
       const res = await fetch('/api/status');
       if (!res.ok) throw new Error('Status HTTP error');
@@ -633,7 +639,7 @@
 
       // Scan Job Progress
       if (data.scan_job) {
-        handleScanJobUpdate(data.scan_job);
+        await handleScanJobUpdate(data.scan_job);
       }
 
     } catch (err) {
@@ -642,10 +648,16 @@
       if (els.statusText) els.statusText.textContent = 'Disconnected';
       if (els.btnWake) els.btnWake.classList.add('hidden');
       if (els.tonerBadge) els.tonerBadge.style.display = 'none';
+    } finally {
+      isPolling = false;
+      if (state.isScanning) {
+        clearTimeout(pollTimer);
+        pollTimer = setTimeout(pollStatus, 400);
+      }
     }
   }
 
-  function handleScanJobUpdate(job) {
+  async function handleScanJobUpdate(job) {
     const wasScanning = state.isScanning;
     state.isScanning = !!job.is_scanning;
     state.scanProgress = job.percent || 0;
@@ -661,6 +673,11 @@
         els.scanProgressBar.style.width = `${state.scanProgress}%`;
         els.scanProgressText.textContent = `${state.scanProgress}% — ${state.scanMessage}`;
       }
+
+      // Live streaming: display each page immediately as soon as a sheet finishes scanning!
+      if (job.current_pages_count > state.pages.length || (job.latest_page_id && !state.pages.some(p => p.id === job.latest_page_id))) {
+        await fetchPages();
+      }
     } else {
       els.btnStartScan.disabled = false;
       els.scanSpinner?.classList.add('hidden');
@@ -673,14 +690,25 @@
       if (wasScanning) {
         if (job.error) {
           showToast(`Scan stopped: ${job.error}`, 'error');
+          state.duplexPhase = 0;
+          state.duplexBasePageIds = [];
+          state.duplexPass1PageIds = [];
         } else {
-          fetchPages();
+          await fetchPages();
           // If Duplex side 1 just completed and we are waiting for reverse pass:
           if (state.duplexPhase === 1) {
-            openDuplexModal();
+            const baseSet = new Set(state.duplexBasePageIds || []);
+            const newPages = state.pages.filter(p => !baseSet.has(p.id)).map(p => p.id);
+            if (newPages.length === 0) {
+              state.duplexPhase = 0;
+              state.duplexBasePageIds = [];
+              showToast('No pages detected in pass 1.', 'warning');
+            } else {
+              state.duplexPass1PageIds = newPages;
+              openDuplexModal();
+            }
           } else if (state.duplexPhase === 2) {
-            state.duplexPhase = 0;
-            showToast('Duplex scan complete! All pages sequenced in order.', 'success');
+            await handleDuplexCompletion();
           } else {
             showToast('Scan completed successfully.', 'success');
           }
@@ -695,8 +723,12 @@
 
     if (state.sides === '2') {
       state.duplexPhase = 1;
+      state.duplexBasePageIds = state.pages.map(p => p.id);
+      state.duplexPass1PageIds = [];
     } else {
       state.duplexPhase = 0;
+      state.duplexBasePageIds = [];
+      state.duplexPass1PageIds = [];
     }
 
     try {
@@ -785,7 +817,72 @@
   function cancelDuplexReverseScan() {
     closeModal(els.duplexModal);
     state.duplexPhase = 0;
+    state.duplexBasePageIds = [];
+    state.duplexPass1PageIds = [];
     showToast('Kept side 1 only as single-sided document.', 'info');
+  }
+
+  async function handleDuplexCompletion() {
+    const baseIds = state.duplexBasePageIds || [];
+    const pass1Ids = state.duplexPass1PageIds || [];
+    const knownSet = new Set([...baseIds, ...pass1Ids]);
+    const pass2Ids = state.pages.filter(p => !knownSet.has(p.id)).map(p => p.id);
+
+    state.duplexPhase = 0;
+    state.duplexBasePageIds = [];
+    state.duplexPass1PageIds = [];
+
+    if (pass2Ids.length === 0) {
+      showToast('Duplex scan complete: no back pages detected.', 'info');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/pages/duplex-interleave', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          base_ids: baseIds,
+          pass1_ids: pass1Ids,
+          pass2_ids: pass2Ids
+        })
+      });
+
+      if (res.ok) {
+        await fetchPages();
+        showToast('Duplex scan complete! Pages reversed and interleaved in 1, 2, 3... order.', 'success');
+        return;
+      }
+    } catch (e) {
+      console.warn('Backend duplex-interleave call failed, falling back to client reorder:', e);
+    }
+
+    // Client-side fallback computation
+    const reversedPass2 = [...pass2Ids].reverse();
+    const interleaved = [];
+    const maxLen = Math.max(pass1Ids.length, reversedPass2.length);
+    for (let i = 0; i < maxLen; i++) {
+      if (i < pass1Ids.length) interleaved.push(pass1Ids[i]);
+      if (i < reversedPass2.length) interleaved.push(reversedPass2[i]);
+    }
+    const finalOrder = [...baseIds, ...interleaved];
+
+    try {
+      const res = await fetch('/api/pages/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: finalOrder, page_ids: finalOrder })
+      });
+      if (res.ok) {
+        await fetchPages();
+        showToast('Duplex scan complete! Pages reversed and interleaved in 1, 2, 3... order.', 'success');
+      } else {
+        showToast('Duplex scan completed, but page reordering failed.', 'warning');
+      }
+    } catch (err) {
+      console.error('Failed to reorder duplex pages:', err);
+      showToast('Error during duplex page reordering.', 'error');
+    }
   }
 
   // Pages Management & Canvas
@@ -944,7 +1041,7 @@
         await fetch('/api/pages/reorder', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page_ids: pageIds })
+          body: JSON.stringify({ order: pageIds, page_ids: pageIds })
         });
       } catch (err) {
         showToast('Failed to save page order', 'error');

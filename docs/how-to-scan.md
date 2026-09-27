@@ -34,6 +34,7 @@ If your scanner has a paper tray on top (an Automatic Document Feeder):
 ## 3. Organizing Your Scanned Pages
 
 Once your pages are on screen:
+
 - **Rotate a Page:** If a page was scanned upside down, click the **↺** or **↷** icon on that page card.
 - **Rotate All Pages:** Click **Rotate Left** or **Rotate Right** on the top toolbar to turn all pages together.
 - **Reorder Pages:** Click and drag any page card left or right to put them in the exact order you want.
@@ -45,6 +46,7 @@ Once your pages are on screen:
 ## 4. Saving Your PDF
 
 When you are satisfied with your pages:
+
 1. UniverScan automatically suggests a clear name with today's date and time (for example, `Scan_2026-09-27_1015`).
 2. If you want to give it a custom name (like `Tax_Receipt_2026`), just type it in the **Document Name** box.
 3. Click the big **Save as PDF** button.

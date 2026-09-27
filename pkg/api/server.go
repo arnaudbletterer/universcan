@@ -181,6 +181,7 @@ func (s *Server) Routes() http.Handler {
 	mux.HandleFunc("POST /api/pages/{id}/rotate", s.handleRotatePagePath)
 	mux.HandleFunc("POST /api/pages/rotate", s.handleRotatePageBody)
 	mux.HandleFunc("POST /api/pages/reorder", s.handleReorderPages)
+	mux.HandleFunc("POST /api/pages/duplex-interleave", s.handleDuplexInterleave)
 	mux.HandleFunc("DELETE /api/pages/{id}", s.handleDeletePage)
 	mux.HandleFunc("POST /api/pages/clear", s.handleClearPages)
 	mux.HandleFunc("POST /api/export/pdf", s.handleExportPDF)
@@ -210,10 +211,14 @@ func (s *Server) Routes() http.Handler {
 				data, err := fs.ReadFile(s.WebFS, "index.html")
 				if err == nil {
 					w.Header().Set("Content-Type", "text/html; charset=utf-8")
+					w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 					w.WriteHeader(http.StatusOK)
 					_, _ = w.Write(data)
 					return
 				}
+			}
+			if strings.HasSuffix(path, ".js") || strings.HasSuffix(path, ".css") {
+				w.Header().Set("Cache-Control", "no-cache, must-revalidate")
 			}
 			fileServer.ServeHTTP(w, r)
 		})
@@ -542,7 +547,8 @@ func (s *Server) handleRotatePageBody(w http.ResponseWriter, r *http.Request) {
 }
 
 type ReorderRequest struct {
-	Order []string `json:"order"`
+	Order   []string `json:"order"`
+	PageIDs []string `json:"page_ids"`
 }
 
 func (s *Server) handleReorderPages(w http.ResponseWriter, r *http.Request) {
@@ -552,8 +558,47 @@ func (s *Server) handleReorderPages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.SessionManager.ReorderPages(req.Order)
-	writeJSON(w, http.StatusOK, map[string]any{"success": true, "order": req.Order})
+	order := req.Order
+	if len(order) == 0 && len(req.PageIDs) > 0 {
+		order = req.PageIDs
+	}
+
+	if len(order) == 0 {
+		writeError(w, http.StatusBadRequest, "order or page_ids is required")
+		return
+	}
+
+	if !s.SessionManager.ReorderPages(order) {
+		writeError(w, http.StatusBadRequest, "reorder failed: mismatch in page IDs or count")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{"success": true, "order": order})
+}
+
+type DuplexInterleaveRequest struct {
+	BaseIDs  []string `json:"base_ids"`
+	Pass1IDs []string `json:"pass1_ids"`
+	Pass2IDs []string `json:"pass2_ids"`
+}
+
+func (s *Server) handleDuplexInterleave(w http.ResponseWriter, r *http.Request) {
+	var req DuplexInterleaveRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	order, ok := s.SessionManager.InterleaveDuplexPages(req.BaseIDs, req.Pass1IDs, req.Pass2IDs)
+	if !ok {
+		writeError(w, http.StatusBadRequest, "duplex interleave failed: mismatch in page IDs or count")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"success": true,
+		"order":   order,
+	})
 }
 
 func (s *Server) handleDeletePage(w http.ResponseWriter, r *http.Request) {
