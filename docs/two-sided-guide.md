@@ -17,6 +17,8 @@ When you select **Both Sides (2-Sided)** in UniverScan:
 
 ## The Secret: Turn Flat Like a Steering Wheel 🚗
 
+![Turn Flat Guide](assets/screenshots/04_duplex_guide.png)
+
 This is the most important step:
 
 > 🛑 **DO NOT flip the paper stack over like a pancake!**  

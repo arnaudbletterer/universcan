@@ -21,6 +21,10 @@ Most scanner software is complicated, cluttered with dozens of technical options
 [ 1. Put Paper In ]  ──▶  [ 2. Click "Scan Now" ]  ──▶  [ 3. Click "Save as PDF" ]
 ```
 
+<p align="center">
+  <img src="docs/assets/screenshots/01_dashboard_preview.png" alt="UniverScan Dashboard" width="850">
+</p>
+
 ---
 
 ## 🚀 Quick Download
@@ -28,7 +32,7 @@ Most scanner software is complicated, cluttered with dozens of technical options
 | Operating System | Download Link | Compatibility Notes |
 | :--- | :--- | :--- |
 | <img src="docs/assets/icons/windows.svg" width="18" height="18" alt="Windows" style="vertical-align: middle;"> **Windows** | [**Download UniverScan-Setup.exe**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-Setup.exe) | Single installer for **Windows 11, 10, 8, & Windows 7** (both 64-bit and 32-bit). No admin password needed! |
-| <img src="docs/assets/icons/apple.svg" width="18" height="18" alt="Apple macOS" style="vertical-align: middle;"> **Apple macOS** | [**Download UniverScan-macOS.dmg**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) | Universal app for **Apple Silicon** (M1/M2/M3/M4) and **Intel Macs**. |
+| <img src="docs/assets/icons/apple.svg" width="18" height="18" alt="Apple macOS" style="vertical-align: middle;"> **Apple macOS** | [**Download UniverScan-macOS.pkg**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.pkg) *(1-Click Installer)*<br>[**Download UniverScan-macOS.dmg**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) *(Drag to Applications)* | Universal for **Apple Silicon** (M1/M2/M3/M4) and **Intel Macs**. Double-click `.pkg` to install automatically into Applications! |
 | <img src="docs/assets/icons/linux.svg" width="18" height="18" alt="Linux" style="vertical-align: middle;"> **Linux** | [**Download Linux Package**](https://github.com/arnaudbletterer/universcan/releases/latest) | Standalone static binaries for **64-bit x86**, **32-bit legacy PCs**, and **Raspberry Pi ARM64**. Zero library locks! |
 
 ---
@@ -44,17 +48,24 @@ Most scanner software is complicated, cluttered with dozens of technical options
 - **1-Click Help Tool:** If your scanner isn't responding, click **Help** > **Copy Help Information**. You can paste it into an email or message to a friend, technician, or AI assistant to solve the problem instantly.
 - **100% Offline & Private:** Zero tracking, zero cloud servers, zero ads. Your documents stay safe on your computer.
 
+<p align="center">
+  <img src="docs/assets/screenshots/04_duplex_guide.png" alt="Guided 2-Sided Scanning" width="410">&nbsp;
+  <img src="docs/assets/screenshots/03_scanner_help.png" alt="1-Click Scanner Help" width="410">
+</p>
+
 ---
 
-## 📖 Documentation
+## 📖 Online Documentation
 
-Read our friendly, jargon-free user manual built with Zensical:
-- [Getting Started](docs/getting-started.md)
-- [How to Scan](docs/how-to-scan.md)
-- [2-Sided Scanning Guide](docs/two-sided-guide.md)
-- [Supported Scanner Brands](docs/supported-scanners.md)
-- [Problem Solver & Help](docs/troubleshooting.md)
-- [Building from Source](docs/developer-guide.md)
+> 🌐 **[Read the Full Documentation Online](https://arnaudbletterer.github.io/universcan/)** (Free, no login required)
+
+Our friendly, jargon-free user manual built with Zensical:
+- [Getting Started](docs/getting-started.md) — 1-minute setup guide
+- [How to Scan](docs/how-to-scan.md) — Step-by-step scanning instructions
+- [2-Sided Scanning Guide](docs/two-sided-guide.md) — How to scan double-sided pages
+- [Supported Scanner Brands](docs/supported-scanners.md) — Full hardware compatibility
+- [Problem Solver & Help](docs/troubleshooting.md) — Quick solutions & 1-click diagnostics
+- [Building from Source](docs/developer-guide.md) — Instructions for developers and builders
 
 ---
 

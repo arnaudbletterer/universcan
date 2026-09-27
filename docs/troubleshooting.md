@@ -33,6 +33,8 @@ If UniverScan cannot find your scanner on the network:
 
 ## 4. How to Get Help (1-Click Report) 📋
 
+![Scanner Help and Problem Solver](assets/screenshots/03_scanner_help.png)
+
 If you ever run into a problem you can't solve on your own, UniverScan has a built-in helper:
 
 1. Click the **Help** button in the top right corner of the app.

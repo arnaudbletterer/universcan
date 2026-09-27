@@ -92,14 +92,14 @@ func NewServer(baseDir string, webFS fs.FS) *Server {
 			LatestPageID:      nil,
 		},
 		cachedStatus: FullStatus{
-			Online:        true,
+			Online:        false,
 			IP:            targetIP,
-			Model:         "Samsung M2070 Series",
+			Model:         "Universal Scanner",
 			DisplayStatus: "Connecting...",
 			IsSleeping:    false,
 			DocInADF:      false,
 			HasADF:        true,
-			TonerPercent:  17,
+			TonerPercent:  0,
 			DrumPercent:   0,
 			ScanJob: ScanJobStatus{
 				IsScanning:        false,
@@ -138,11 +138,13 @@ func (s *Server) StartBackgroundMonitor(interval time.Duration) {
 					st, err := s.UniversalScanner.GetStatus(ctx)
 					cancel()
 
+					s.statusMu.Lock()
 					if err == nil && st != nil {
-						s.statusMu.Lock()
 						s.cachedStatus.Online = st.Online
 						s.cachedStatus.IP = st.IP
-						s.cachedStatus.Model = st.Model
+						if st.Model != "" {
+							s.cachedStatus.Model = st.Model
+						}
 						s.cachedStatus.DisplayStatus = st.DisplayStatus
 						s.cachedStatus.IsSleeping = st.IsSleeping
 						s.cachedStatus.DocInADF = st.DocInADF
@@ -151,8 +153,11 @@ func (s *Server) StartBackgroundMonitor(interval time.Duration) {
 							s.cachedStatus.TonerPercent = st.TonerPercent
 						}
 						s.cachedStatus.MACAddress = st.MACAddress
-						s.statusMu.Unlock()
+					} else {
+						s.cachedStatus.Online = false
+						s.cachedStatus.DisplayStatus = "Scanner offline"
 					}
+					s.statusMu.Unlock()
 				}
 			}
 		}

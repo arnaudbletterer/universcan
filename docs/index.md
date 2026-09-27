@@ -11,8 +11,10 @@ Most scanner software is complicated, cluttered with dozens of buttons you never
 **UniverScan is different.** It was built from the ground up to be so simple and straightforward that anyone — from a child scanning school homework to grandparents digitizing old letters — can use it without frustration.
 
 <div style="text-align: center; margin: 2rem 0;">
-  <a href="getting-started.html" style="background-color: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 16px;">Get UniverScan for Free →</a>
+  <a href="getting-started.html" style="background-color: #0078D4; color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 16px;">Get UniverScan for Free →</a>
 </div>
+
+![UniverScan Clean Interface](assets/screenshots/01_dashboard_preview.png)
 
 ---
 

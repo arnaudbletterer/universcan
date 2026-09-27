@@ -26,7 +26,7 @@
   // State Management
   const state = {
     scannerIp: safeGet('universcan_ip', safeGet('prism_scanner_ip', '192.168.1.50')),
-    scannerModel: 'Samsung M2070 Series',
+    scannerModel: safeGet('universcan_model', 'Scanner'),
     activeProtocol: 'Auto',
     online: false,
     isSleeping: false,
@@ -581,12 +581,28 @@
       if (data.model) state.scannerModel = data.model;
       if (data.protocol && els.activeProtocolBadge) {
         els.activeProtocolBadge.textContent = data.protocol;
+        els.activeProtocolBadge.style.display = 'inline-flex';
+      }
+
+      // Update Scanner Name Button text
+      if (els.activeScannerName) {
+        if (state.online && data.model) {
+          els.activeScannerName.textContent = data.ip ? `${data.model} (${data.ip})` : data.model;
+        } else if (state.online) {
+          els.activeScannerName.textContent = `Connected (${data.ip || state.scannerIp})`;
+        } else if (state.scannerIp) {
+          els.activeScannerName.textContent = `Scanner (${state.scannerIp})`;
+        } else {
+          els.activeScannerName.textContent = 'No Scanner Selected';
+        }
       }
 
       // Update Header Status Indicator
       if (!state.online) {
         els.statusDot.className = 'status-dot offline';
-        els.statusText.textContent = 'Scanner Offline';
+        els.statusText.textContent = data.display_status || 'Scanner Offline';
+        els.btnWake?.classList.add('hidden');
+        if (els.tonerBadge) els.tonerBadge.style.display = 'none';
       } else if (state.isScanning) {
         els.statusDot.className = 'status-dot scanning';
         els.statusText.textContent = state.scanMessage || 'Scanning...';
@@ -601,10 +617,12 @@
       }
 
       // Toner
-      if (data.toner_percent !== undefined && data.toner_percent !== null) {
+      if (state.online && data.toner_percent !== undefined && data.toner_percent !== null && data.toner_percent > 0) {
         state.tonerPercent = data.toner_percent;
         if (els.tonerText) els.tonerText.textContent = `Toner: ${data.toner_percent}%`;
         if (els.tonerBadge) els.tonerBadge.style.display = 'inline-flex';
+      } else if (!state.online && els.tonerBadge) {
+        els.tonerBadge.style.display = 'none';
       }
 
       // Smart Feeder Detection
@@ -620,8 +638,10 @@
 
     } catch (err) {
       state.online = false;
-      els.statusDot.className = 'status-dot offline';
-      els.statusText.textContent = 'Disconnected';
+      if (els.statusDot) els.statusDot.className = 'status-dot offline';
+      if (els.statusText) els.statusText.textContent = 'Disconnected';
+      if (els.btnWake) els.btnWake.classList.add('hidden');
+      if (els.tonerBadge) els.tonerBadge.style.display = 'none';
     }
   }
 
@@ -651,15 +671,19 @@
 
       // Check if scan just completed
       if (wasScanning) {
-        fetchPages();
-        // If Duplex side 1 just completed and we are waiting for reverse pass:
-        if (state.duplexPhase === 1) {
-          openDuplexModal();
-        } else if (state.duplexPhase === 2) {
-          state.duplexPhase = 0;
-          showToast('Duplex scan complete! All pages sequenced in order.', 'success');
+        if (job.error) {
+          showToast(`Scan stopped: ${job.error}`, 'error');
         } else {
-          showToast('Scan completed successfully.', 'success');
+          fetchPages();
+          // If Duplex side 1 just completed and we are waiting for reverse pass:
+          if (state.duplexPhase === 1) {
+            openDuplexModal();
+          } else if (state.duplexPhase === 2) {
+            state.duplexPhase = 0;
+            showToast('Duplex scan complete! All pages sequenced in order.', 'success');
+          } else {
+            showToast('Scan completed successfully.', 'success');
+          }
         }
       }
     }

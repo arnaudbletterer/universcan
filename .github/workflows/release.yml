@@ -123,6 +123,7 @@ jobs:
           path: |
             dist/macos/UniverScan-macOS.zip
             dist/macos/UniverScan-macOS.dmg
+            dist/macos/UniverScan-macOS.pkg
           retention-days: 1
 
   # ============================================================================
@@ -209,6 +210,7 @@ jobs:
             release-artifacts/universcan-windows-i386.zip
             release-artifacts/UniverScan-macOS.zip
             release-artifacts/UniverScan-macOS.dmg
+            release-artifacts/UniverScan-macOS.pkg
             release-artifacts/universcan-linux-x86_64.tar.gz
             release-artifacts/universcan-linux-i386.tar.gz
             release-artifacts/universcan-linux-arm64.tar.gz

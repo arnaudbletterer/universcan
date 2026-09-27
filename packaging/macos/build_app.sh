@@ -54,12 +54,50 @@ fi
 echo "Creating ZIP archive ${DIST_DIR}/UniverScan-macOS.zip..."
 (cd "${DIST_DIR}" && zip -r -q "UniverScan-macOS.zip" "${APP_NAME}")
 
-# Create DMG if hdiutil is available (native on macOS)
+# Create native Apple Installer Package (.pkg) if pkgbuild is available
+if command -v pkgbuild &>/dev/null; then
+    echo "Creating native macOS Installer Package ${DIST_DIR}/UniverScan-macOS.pkg..."
+    pkgbuild --component "${APP_BUNDLE}" --install-location "/Applications" "${DIST_DIR}/UniverScan-macOS.pkg" || {
+        echo "Warning: pkgbuild component failed, building root package..."
+        STAGING_PKG="${DIST_DIR}/pkg_staging/Applications"
+        mkdir -p "${STAGING_PKG}"
+        cp -R "${APP_BUNDLE}" "${STAGING_PKG}/"
+        pkgbuild --root "${DIST_DIR}/pkg_staging" --identifier "com.universcan.app" --version "0.1.0" "${DIST_DIR}/UniverScan-macOS.pkg"
+        rm -rf "${DIST_DIR}/pkg_staging"
+    }
+fi
+
+# Create Drag-to-Install DMG if hdiutil is available (native on macOS)
 if command -v hdiutil &>/dev/null; then
-    echo "Creating DMG archive ${DIST_DIR}/UniverScan-macOS.dmg..."
-    hdiutil create -volname "UniverScan" -srcfolder "${APP_BUNDLE}" -ov -format UDZO "${DIST_DIR}/UniverScan-macOS.dmg"
+    echo "Creating Drag-to-Install DMG ${DIST_DIR}/UniverScan-macOS.dmg..."
+    DMG_STAGING="${DIST_DIR}/dmg_staging"
+    rm -rf "${DMG_STAGING}"
+    mkdir -p "${DMG_STAGING}"
+    
+    # Copy app bundle
+    cp -R "${APP_BUNDLE}" "${DMG_STAGING}/"
+    
+    # Create symlink to /Applications for easy drag-to-install
+    ln -s /Applications "${DMG_STAGING}/Applications"
+
+    # Add quick install instructions file for beginners
+    cat << 'EOF' > "${DMG_STAGING}/How to Install.txt"
+UniverScan for macOS
+====================
+
+To install:
+1. Drag the "UniverScan" app icon into the "Applications" folder right next to it.
+2. Open UniverScan from your Applications folder or Launchpad.
+
+Enjoy simple, universal document scanning!
+EOF
+
+    hdiutil create -volname "UniverScan" -srcfolder "${DMG_STAGING}" -ov -format UDZO "${DIST_DIR}/UniverScan-macOS.dmg"
+    rm -rf "${DMG_STAGING}"
 fi
 
 echo "=== macOS Packaging Complete ==="
 echo "App bundle: ${APP_BUNDLE}"
 echo "Zip archive: ${DIST_DIR}/UniverScan-macOS.zip"
+[[ -f "${DIST_DIR}/UniverScan-macOS.pkg" ]] && echo "Pkg installer: ${DIST_DIR}/UniverScan-macOS.pkg"
+[[ -f "${DIST_DIR}/UniverScan-macOS.dmg" ]] && echo "DMG archive: ${DIST_DIR}/UniverScan-macOS.dmg"

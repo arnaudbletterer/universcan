@@ -7,6 +7,9 @@ on:
     branches: [ master, main ]
 
 jobs:
+  # ============================================================================
+  # 1. Multi-Platform Build & Unit Test Matrix (Ubuntu, Windows, macOS)
+  # ============================================================================
   test:
     name: Test & Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -25,14 +28,71 @@ jobs:
           go-version: '1.24.x'
           cache: true
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Sync web assets for embed
         shell: bash
         run: |
           mkdir -p cmd/universcan/web
           cp -r web/* cmd/universcan/web/
 
+      - name: Validate Frontend Syntax and DOM Integrity
+        shell: bash
+        run: |
+          node --check web/js/app.js
+          node --check cmd/universcan/web/js/app.js
+          python tests/check_frontend.py
+
       - name: Run Go Unit Tests
         run: go test -v ./...
 
       - name: Verify Binary Compilation
         run: go build -v -buildvcs=false -o universcan-test ./cmd/universcan
+
+  # ============================================================================
+  # 2. End-to-End Headless Browser UI Test (Playwright on Ubuntu)
+  # ============================================================================
+  e2e-ui-test:
+    name: E2E Browser UI Test & Screenshot Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Sync web assets for embed
+        run: |
+          mkdir -p cmd/universcan/web
+          cp -r web/* cmd/universcan/web/
+
+      - name: Install Playwright & Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright Pillow zensical
+          playwright install --with-deps chromium
+
+      - name: Run Playwright E2E UI Tests
+        run: |
+          python tests/test_e2e_ui.py
+
+      - name: Verify Documentation Build
+        run: |
+          python -m zensical build

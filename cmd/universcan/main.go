@@ -115,7 +115,6 @@ func openBrowser(url string) {
 	var appCmd *exec.Cmd
 	switch runtime.GOOS {
 	case "windows":
-		// Check common Chrome paths for app window mode
 		chromePaths := []string{
 			os.ExpandEnv(`%ProgramFiles%\Google\Chrome\Application\chrome.exe`),
 			os.ExpandEnv(`%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe`),
@@ -134,9 +133,32 @@ func openBrowser(url string) {
 		_ = exec.Command("cmd", "/c", "start", url).Start()
 
 	case "darwin":
+		macAppPaths := []string{
+			"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+			"/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+			"/Applications/Brave Browser.app/Contents/MacOS/Brave Browser",
+			"/Applications/Chromium.app/Contents/MacOS/Chromium",
+		}
+		for _, mp := range macAppPaths {
+			if _, err := os.Stat(mp); err == nil {
+				appCmd = exec.Command(mp, fmt.Sprintf("--app=%s", url))
+				if err := appCmd.Start(); err == nil {
+					return
+				}
+			}
+		}
 		_ = exec.Command("open", url).Start()
 
 	default: // Linux / BSD
+		linuxApps := []string{"google-chrome", "chromium-browser", "chromium", "microsoft-edge", "brave-browser"}
+		for _, la := range linuxApps {
+			if lp, err := exec.LookPath(la); err == nil {
+				appCmd = exec.Command(lp, fmt.Sprintf("--app=%s", url))
+				if err := appCmd.Start(); err == nil {
+					return
+				}
+			}
+		}
 		_ = exec.Command("xdg-open", url).Start()
 	}
 }
