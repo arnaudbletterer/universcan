@@ -466,7 +466,7 @@
       ``,
       `## Client Environment`,
       `- **Platform:** \`${data.client_platform || navigator.userAgent}\``,
-      `- **Application Version:** PrismScan Native 2.0.0`
+      `- **Application Version:** PrismScan Native 0.1.0`
     ].join('\n');
 
     state.latestDiagnosticMarkdown = data.markdown_summary || md;

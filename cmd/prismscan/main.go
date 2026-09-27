@@ -31,7 +31,7 @@ func main() {
 	flag.Parse()
 
 	log.Println("=====================================================")
-	log.Println("  PrismScan — Universal Native Document Scanner v2.0")
+	log.Println("  PrismScan — Universal Native Document Scanner v0.1.0")
 	log.Println("=====================================================")
 
 	// Extract "web" subdirectory from embedded filesystem

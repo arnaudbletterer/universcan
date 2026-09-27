@@ -22,7 +22,7 @@ if (-not (Test-Path $CmdWebDir)) {
 Copy-Item -Recurse -Force (Join-Path $RootDir "web\*") $CmdWebDir
 
 # Go flags for compact, stripped binaries with embedded assets
-$LdFlags = "-s -w -X main.Version=2.0.0"
+$LdFlags = "-s -w -X main.Version=0.1.0"
 
 # 1. Windows x86_64
 Write-Host "--> Compiling Windows x86_64 (bin/prismscan.exe)..." -ForegroundColor Yellow

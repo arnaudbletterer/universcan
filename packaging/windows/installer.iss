@@ -3,7 +3,7 @@
 ; Supports both Administrative (Program Files) and Standard User (local AppData) installs.
 
 #define MyAppName "PrismScan"
-#define MyAppVersion "2.0.0"
+#define MyAppVersion "0.1.0"
 #define MyAppPublisher "PrismScan"
 #define MyAppURL "https://github.com/abletterer/prism-scan"
 #define MyAppExeName "prismscan.exe"

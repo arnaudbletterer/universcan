@@ -61,7 +61,7 @@ This repository includes fully automated GitHub Actions workflows:
 Runs automated Go unit tests and build verification across `ubuntu-latest`, `windows-latest`, and `macos-latest` on every push and pull request.
 
 ### 2. Multi-Platform Release (`.github/workflows/release.yml`)
-Triggered automatically on git tags (e.g. `v2.0.0`) or via manual **Run workflow** in the GitHub Actions tab.
+Triggered automatically on git tags (e.g. `v0.1.0`) or via manual **Run workflow** in the GitHub Actions tab.
 
 It automatically:
 1. Compiles optimized binaries for Windows, macOS (Universal ARM64+Intel), and Linux.
@@ -73,7 +73,7 @@ It automatically:
 
 ### How to Release a New Version
 ```bash
-git tag v2.0.0
-git push origin v2.0.0
+git tag v0.1.0
+git push origin v0.1.0
 ```
 Or navigate to **Actions** → **Release Multi-Platform Packages** → **Run workflow** in the GitHub web interface.

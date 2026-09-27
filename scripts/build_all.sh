@@ -18,7 +18,7 @@ mkdir -p "${BIN_DIR}" "${DIST_DIR}"
 mkdir -p "${ROOT_DIR}/cmd/prismscan/web"
 cp -r "${ROOT_DIR}/web/"* "${ROOT_DIR}/cmd/prismscan/web/"
 
-LDFLAGS="-s -w -X main.Version=2.0.0"
+LDFLAGS="-s -w -X main.Version=0.1.0"
 
 # 1. Windows x86_64
 echo "--> Compiling Windows x86_64 (bin/prismscan.exe)..."
