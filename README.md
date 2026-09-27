@@ -2,7 +2,7 @@
 
 **The simple, universal document scanner for everyone — from kids to grandparents.**
 
-[![GitHub Release](https://img.shields.io/github/v/release/arnaudbletterer/universcan?style=flat-square&color=blue)](https://github.com/arnaudbletterer/universcan/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/arnaudbletterer/universcan?style=flat-square)](https://github.com/arnaudbletterer/universcan/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)](https://github.com/arnaudbletterer/universcan/releases)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local%20%26%20Offline-success?style=flat-square)](SECURITY.md)
