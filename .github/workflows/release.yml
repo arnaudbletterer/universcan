@@ -1,0 +1,198 @@
+name: Release Multi-Platform Packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release Tag Name (e.g. v2.0.0)'
+        required: false
+        default: 'v2.0.0'
+
+permissions:
+  contents: write
+
+jobs:
+  # ============================================================================
+  # 1. Windows Packages (Setup Installer & Portable Zip)
+  # ============================================================================
+  build-windows:
+    name: Build Windows (Installer & Portable)
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: true
+
+      - name: Sync web assets
+        shell: bash
+        run: |
+          mkdir -p cmd/prismscan/web
+          cp -r web/* cmd/prismscan/web/
+
+      - name: Install Inno Setup
+        run: |
+          if (-not (Get-Command iscc -ErrorAction SilentlyContinue)) {
+            choco install innosetup --no-progress
+            echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          }
+
+      - name: Compile Windows Executable
+        env:
+          GOOS: windows
+          GOARCH: amd64
+          CGO_ENABLED: 0
+        run: |
+          mkdir bin -ErrorAction SilentlyContinue
+          $tag = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { '${{ github.event.inputs.tag_name }}' }
+          go build -buildvcs=false -ldflags "-s -w -X main.Version=$tag" -o bin/prismscan.exe ./cmd/prismscan
+
+      - name: Build Inno Setup Installer
+        run: |
+          mkdir dist/windows -ErrorAction SilentlyContinue
+          iscc packaging/windows/installer.iss
+
+      - name: Create Portable Zip Archive
+        run: |
+          Compress-Archive -Path bin/prismscan.exe -DestinationPath dist/windows/prismscan-windows-x86_64.zip -Force
+
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: |
+            dist/windows/PrismScan-Setup.exe
+            dist/windows/prismscan-windows-x86_64.zip
+          retention-days: 1
+
+  # ============================================================================
+  # 2. macOS Packages (Universal .app Bundle, DMG & Zip)
+  # ============================================================================
+  build-macos:
+    name: Build macOS (Universal App & DMG)
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: true
+
+      - name: Sync web assets
+        run: |
+          mkdir -p cmd/prismscan/web
+          cp -r web/* cmd/prismscan/web/
+
+      - name: Compile macOS Binaries (ARM64 Apple Silicon + AMD64 Intel)
+        run: |
+          mkdir -p bin
+          tag="${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.tag_name }}"
+          LDFLAGS="-s -w -X main.Version=${tag}"
+          
+          echo "Compiling darwin/arm64..."
+          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/prismscan-darwin-arm64 ./cmd/prismscan
+          
+          echo "Compiling darwin/amd64..."
+          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/prismscan-darwin-amd64 ./cmd/prismscan
+
+      - name: Package macOS App Bundle and DMG
+        run: |
+          chmod +x packaging/macos/build_app.sh
+          ./packaging/macos/build_app.sh
+
+      - name: Upload macOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-release
+          path: |
+            dist/macos/PrismScan-macOS.zip
+            dist/macos/PrismScan-macOS.dmg
+          retention-days: 1
+
+  # ============================================================================
+  # 3. Linux Packages (Tarball Bundle & Standalone Binary)
+  # ============================================================================
+  build-linux:
+    name: Build Linux (x86_64 Tarball)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: true
+
+      - name: Sync web assets
+        run: |
+          mkdir -p cmd/prismscan/web
+          cp -r web/* cmd/prismscan/web/
+
+      - name: Compile Linux Binary
+        run: |
+          mkdir -p bin
+          tag="${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.tag_name }}"
+          LDFLAGS="-s -w -X main.Version=${tag}"
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -ldflags "${LDFLAGS}" -o bin/prismscan-linux-amd64 ./cmd/prismscan
+
+      - name: Package Linux Bundle
+        run: |
+          chmod +x packaging/linux/build_appimage.sh
+          ./packaging/linux/build_appimage.sh
+
+      - name: Upload Linux Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-release
+          path: |
+            dist/linux/prismscan-linux-x86_64.tar.gz
+          retention-days: 1
+
+  # ============================================================================
+  # 4. GitHub Release Publisher & Checksum Verification
+  # ============================================================================
+  publish-release:
+    name: Publish GitHub Release
+    needs: [ build-windows, build-macos, build-linux ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+          merge-multiple: true
+
+      - name: Generate SHA256 Checksums
+        run: |
+          cd release-artifacts
+          ls -la
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.tag_name }}
+          name: PrismScan ${{ github.ref_type == 'tag' && github.ref_name || github.event.inputs.tag_name }} — Universal Driverless Scanner
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            release-artifacts/PrismScan-Setup.exe
+            release-artifacts/prismscan-windows-x86_64.zip
+            release-artifacts/PrismScan-macOS.zip
+            release-artifacts/PrismScan-macOS.dmg
+            release-artifacts/prismscan-linux-x86_64.tar.gz
+            release-artifacts/SHA256SUMS.txt

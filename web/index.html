@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrismScan — Universal Document Scanner</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-logo">
+        <svg viewBox="0 0 48 48" width="28" height="28" fill="none">
+          <rect x="6" y="24" width="36" height="18" rx="4" fill="currentColor" opacity="0.15" stroke="currentColor" stroke-width="2"/>
+          <rect x="10" y="29" width="16" height="8" rx="2" fill="currentColor" opacity="0.25"/>
+          <circle cx="36" cy="33" r="2.5" fill="#2563eb"/>
+          <path d="M12 24V14a4 4 0 0 1 4-4h16a4 4 0 0 1 4 4v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="8" y1="24" x2="40" y2="24" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">PrismScan</h1>
+        <p class="brand-subtitle">Universal Native Scanner</p>
+      </div>
+    </div>
+
+    <!-- Scanner Selector & Telemetry -->
+    <div class="header-status-group">
+      <!-- Universal Scanner Picker Button -->
+      <button id="btnOpenScannerPicker" class="scanner-picker-btn" title="Select or change scanner">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="14" width="20" height="7" rx="2"/>
+          <path d="M4 14V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8"/>
+        </svg>
+        <span id="activeScannerName">Samsung M2070 (192.168.1.50)</span>
+        <span id="activeProtocolBadge" class="protocol-badge">Auto</span>
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+
+      <!-- Status Pill -->
+      <div class="status-pill">
+        <span id="statusDot" class="status-dot"></span>
+        <span id="statusText">Checking scanner...</span>
+      </div>
+
+      <!-- Wake Button (Conditional) -->
+      <button id="btnWake" class="btn btn-warning btn-sm hidden">
+        <span>⚡ Wake Scanner</span>
+      </button>
+
+      <!-- Toner Level Badge -->
+      <div id="tonerBadge" class="badge-info" style="display: none;">
+        <span id="tonerText">Toner: --</span>
+      </div>
+
+      <!-- Header Action Icons -->
+      <div class="header-actions">
+        <!-- Diagnostic Report Button -->
+        <button id="btnOpenDiagnostics" class="btn btn-secondary btn-sm" title="Scanner Diagnostics & Compatibility">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+          </svg>
+          <span>Diagnostics</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggle" class="btn btn-ghost btn-icon" title="Toggle Light/Dark Theme">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <!-- Settings Button -->
+        <button id="btnOpenSettings" class="btn btn-ghost btn-icon" title="Settings">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-container">
+
+    <!-- Left Sidebar: Controls -->
+    <aside class="sidebar">
+
+      <!-- 1. Main Action: Start Scan -->
+      <div class="panel-card">
+        <button id="btnStartScan" class="btn btn-primary btn-primary-large">
+          <svg id="scanSpinner" class="hidden" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" style="animation: spin 1s linear infinite;">
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+          </svg>
+          <span id="btnStartScanText">Start Scan</span>
+        </button>
+
+        <!-- Live Scan Progress Card -->
+        <div id="scanProgressCard" class="progress-card" style="display: none;">
+          <div class="progress-header">
+            <span>Scanning in progress</span>
+            <span id="scanProgressText">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div id="scanProgressBar" class="progress-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Paper Source: Flatbed Glass vs Feeder (ADF) -->
+      <div class="panel-card">
+        <div class="panel-card-title">Paper Source</div>
+        <div class="segmented-control">
+          <button id="btnSourceFlatbed" class="segment-btn active" type="button">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="14" width="20" height="7" rx="2"/>
+              <path d="M4 14V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8"/>
+            </svg>
+            <span>Flatbed Glass</span>
+          </button>
+          <button id="btnSourceAdf" class="segment-btn" type="button" disabled>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="14" width="20" height="7" rx="2"/>
+              <path d="M6 14V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v10"/>
+              <path d="M9 7h6"/>
+            </svg>
+            <span>Feeder (ADF)</span>
+          </button>
+        </div>
+
+        <!-- Smart Feeder Detection Notice -->
+        <div id="feederNotice" class="notice-box calm">
+          <svg class="notice-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <div id="feederNoticeText">
+            Using Flatbed Glass because no sheets were detected in the top feeder. To use the feeder, slide paper into the top slot and it will activate automatically.
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Sides: 1-Sided vs 2-Sided -->
+      <div class="panel-card">
+        <div class="panel-card-title">Sides</div>
+        <div class="segmented-control">
+          <button id="btnSides1" class="segment-btn active" type="button">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="3" width="14" height="18" rx="2"/>
+            </svg>
+            <span>1-Sided</span>
+          </button>
+          <button id="btnSides2" class="segment-btn" type="button">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="14" height="18" rx="2"/>
+              <path d="M7 7h12a2 2 0 0 1 2 2v12"/>
+            </svg>
+            <span>2-Sided (Duplex)</span>
+          </button>
+        </div>
+        <div style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+          With 2-Sided, PrismScan scans side 1, guides you to turn the stack, and automatically sequences all pages in order.
+        </div>
+      </div>
+
+      <!-- 4. Quality & Color -->
+      <div class="panel-card">
+        <div class="panel-card-title">Scan Quality</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="selectColor">Color Mode</label>
+            <select id="selectColor" class="form-select">
+              <option value="color">Color</option>
+              <option value="gray">Grayscale</option>
+              <option value="lineart">Black & White</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="selectDpi">Resolution</label>
+            <select id="selectDpi" class="form-select">
+              <option value="150">150 DPI (Fast)</option>
+              <option value="300" selected>300 DPI (Standard)</option>
+              <option value="600">600 DPI (Fine)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Save Document -->
+      <div class="panel-card">
+        <div class="panel-card-title">Save Document</div>
+        <div class="form-group">
+          <label class="form-label" for="inputPdfName">Document File Name</label>
+          <input id="inputPdfName" class="form-input" type="text" placeholder="Scan_YYYY-MM-DD">
+        </div>
+        <button id="btnSavePdf" class="btn btn-primary" disabled>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <line x1="9" y1="15" x2="15" y2="15"></line>
+          </svg>
+          <span>Save as PDF</span>
+        </button>
+        <button id="btnOpenFolder" class="btn btn-secondary btn-sm" type="button">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Open Scans Folder</span>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- Right Workspace: Scanned Pages Canvas -->
+    <main class="main-canvas">
+
+      <!-- Canvas Toolbar -->
+      <div class="canvas-toolbar">
+        <div class="canvas-title-group">
+          <span class="panel-card-title" style="margin: 0;">Document Pages</span>
+          <span id="pageCountBadge" class="page-counter-badge">0 Pages</span>
+        </div>
+
+        <div class="canvas-actions">
+          <button id="btnRotateAllLeft" class="btn btn-secondary btn-sm" title="Rotate all pages counter-clockwise">
+            <span>↶ Rotate Left</span>
+          </button>
+          <button id="btnRotateAllRight" class="btn btn-secondary btn-sm" title="Rotate all pages clockwise">
+            <span>↷ Rotate Right</span>
+          </button>
+          <button id="btnClearAll" class="btn btn-ghost btn-sm" title="Clear all pages in current session">
+            <span>Clear All</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Canvas Content Area -->
+      <div class="canvas-content">
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+          <svg class="empty-state-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="8" y="16" width="32" height="24" rx="3"/>
+            <path d="M14 16V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/>
+            <line x1="8" y1="26" x2="40" y2="26" stroke-dasharray="2 2"/>
+            <line x1="16" y1="32" x2="26" y2="32"/>
+          </svg>
+          <div class="empty-state-title">No Scanned Pages</div>
+          <div class="empty-state-desc">
+            Place your pages into the feeder or on the flatbed glass, then click <strong>Start Scan</strong>.
+          </div>
+        </div>
+
+        <!-- Pages Grid -->
+        <div id="pagesGrid" class="pages-grid" style="display: none;"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Universal Scanner Picker Modal -->
+  <div id="scannerPickerModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Select Scanner</h2>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Connect to any network scanner via eSCL AirScan, WSD, or Direct IP</p>
+        </div>
+        <button id="btnCloseScannerPicker" class="btn btn-ghost btn-sm" type="button">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Manual IP Form -->
+        <div class="form-group">
+          <label class="form-label" for="inputScannerIp">Scanner IP Address or Hostname</label>
+          <div style="display: flex; gap: 8px;">
+            <input id="inputScannerIp" class="form-input" type="text" placeholder="192.168.1.50" value="192.168.1.50">
+            <button id="btnConnectIp" class="btn btn-primary" type="button">Connect</button>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px;">
+          <span class="panel-card-title">Discovered Network Devices</span>
+          <button id="btnDiscoverScanners" class="btn btn-secondary btn-sm" type="button">
+            <span>🔍 Discover Scanners</span>
+          </button>
+        </div>
+
+        <!-- Scanners List -->
+        <div id="scannerList" class="scanner-list">
+          <div class="scanner-item active">
+            <div>
+              <div style="font-weight: 700; font-size: 13px;">Samsung M2070 Series</div>
+              <div style="font-size: 11px; color: var(--text-muted);">192.168.1.50</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="protocol-badge samsung">Samsung 9400</span>
+              <span class="protocol-badge wsd">WSD</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnCloseScannerPickerFooter" class="btn btn-secondary" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagnostics & Compatibility Modal -->
+  <div id="diagnosticsModal" class="modal-backdrop">
+    <div class="modal-box" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Scanner Diagnostics & Compatibility</h2>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Technical probe to verify hardware protocol responses and share reports with developers or AI assistants.</p>
+        </div>
+        <button id="btnCloseDiagnostics" class="btn btn-ghost btn-sm" type="button">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 12px; font-weight: 600;">
+            Target: <span id="diagTargetIp" style="font-family: var(--font-mono); font-weight: 700;">192.168.1.50</span>
+          </div>
+          <button id="btnRunDiagnostics" class="btn btn-primary btn-sm" type="button">
+            <span>⚡ Run Hardware Probe</span>
+          </button>
+        </div>
+
+        <!-- Protocol Compatibility Matrix -->
+        <div class="diagnostics-matrix">
+          <div class="protocol-row">
+            <div class="protocol-name">
+              <span>Apple AirScan / eSCL (Port 80/8080/443)</span>
+            </div>
+            <span id="statusEscl" class="protocol-status active">Responsive</span>
+          </div>
+          <div class="protocol-row">
+            <div class="protocol-name">
+              <span>WSD / WS-Scan (Port 5357 / 80)</span>
+            </div>
+            <span id="statusWsd" class="protocol-status active">Responsive</span>
+          </div>
+          <div class="protocol-row">
+            <div class="protocol-name">
+              <span>Samsung Direct Binary Driver (Port 9400)</span>
+            </div>
+            <span id="statusSamsung" class="protocol-status active">Ready</span>
+          </div>
+          <div class="protocol-row">
+            <div class="protocol-name">
+              <span>SNMP Telemetry (UDP Port 161)</span>
+            </div>
+            <span id="statusSnmp" class="protocol-status active">Responsive</span>
+          </div>
+        </div>
+
+        <!-- Formatted Report Preview Box -->
+        <div class="form-group">
+          <label class="form-label">Diagnostic Report (Markdown)</label>
+          <pre id="diagnosticReportText" class="report-preview-box">Click 'Run Hardware Probe' to generate diagnostic telemetry...</pre>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="justify-content: space-between;">
+        <span id="copyReportStatus" style="font-size: 11px; color: var(--success); font-weight: 600; display: none;">✓ Report copied to clipboard!</span>
+        <div style="display: flex; gap: 8px; margin-left: auto;">
+          <button id="btnSaveReport" class="btn btn-secondary" type="button">
+            <span>💾 Save Report (.json)</span>
+          </button>
+          <button id="btnCopyReport" class="btn btn-primary" type="button">
+            <span>📋 Copy Diagnostic Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duplex Reverse Pass Modal (Guided Non-Intuitive Step) -->
+  <div id="duplexModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Turn Document Stack for Side 2</h2>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Step 2 of 2 — Guided Duplex Scanning</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <!-- 3 Step Cards -->
+        <div class="duplex-steps-grid">
+          <div class="duplex-step-card">
+            <div class="step-num-badge">1</div>
+            <div class="step-title">Take Stack</div>
+            <div class="step-desc">Pick up the stack from the exit tray.</div>
+          </div>
+          <div class="duplex-step-card" style="border-color: var(--primary);">
+            <div class="step-num-badge">2</div>
+            <div class="step-title">Rotate 180° Flat</div>
+            <div class="step-desc">Turn flat like a steering wheel. Do NOT flip over!</div>
+          </div>
+          <div class="duplex-step-card">
+            <div class="step-num-badge">3</div>
+            <div class="step-title">Slide in Feeder</div>
+            <div class="step-desc">Insert the stack into the top feeder slot.</div>
+          </div>
+        </div>
+
+        <!-- Clean SVG Visual Diagram -->
+        <div class="duplex-diagram-container">
+          <img src="/assets/duplex_rotation.svg" alt="How to rotate paper for duplex scanning" style="max-width: 100%; height: auto;">
+        </div>
+
+        <!-- Reassurance Banner -->
+        <div class="reassurance-banner">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>PrismScan automatically sequences all pages in order (1, 2, 3...) when done.</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnDuplexCancel" class="btn btn-secondary" type="button">
+          Finish as 1-Sided
+        </button>
+        <button id="btnDuplexScanReverse" class="btn btn-primary" type="button">
+          <span>Scan Side 2 (Reverse Pass)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zoom Preview Modal -->
+  <div id="previewModal" class="modal-backdrop">
+    <div class="modal-box preview-modal-box">
+      <div class="modal-header">
+        <h2 id="previewTitle" class="modal-title">Page Preview</h2>
+        <button id="btnClosePreview" class="btn btn-ghost btn-sm" type="button">Close (Esc)</button>
+      </div>
+      <div class="preview-viewer">
+        <img id="previewImg" class="preview-img" src="" alt="Preview">
+        <div class="preview-controls">
+          <button id="btnPrevPage" class="btn btn-ghost btn-sm" title="Previous Page (←)">←</button>
+          <button id="btnZoomOut" class="btn btn-ghost btn-sm" title="Zoom Out">-</button>
+          <button id="btnZoomReset" class="btn btn-ghost btn-sm" title="Reset Zoom">100%</button>
+          <button id="btnZoomIn" class="btn btn-ghost btn-sm" title="Zoom In">+</button>
+          <button id="btnNextPage" class="btn btn-ghost btn-sm" title="Next Page (→)">→</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title">PrismScan Settings</h2>
+        <button id="btnCloseSettings" class="btn btn-ghost btn-sm" type="button">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="settingOutputDir">Scans Destination Folder</label>
+          <input id="settingOutputDir" class="form-input" type="text" placeholder="Default: Documents/Scans">
+        </div>
+        <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px;">
+          <input id="settingOpenAfter" type="checkbox">
+          <label class="form-label" for="settingOpenAfter" style="margin: 0; cursor: pointer;">Automatically open PDF after saving</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnSaveSettings" class="btn btn-primary" type="button">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <style>
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+  </style>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

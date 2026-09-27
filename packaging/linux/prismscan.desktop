@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=PrismScan
+GenericName=Document Scanner
+Comment=Sober, modern, driverless document scanner for Samsung/Xerox and network MFPs
+Exec=prismscan
+Icon=prismscan
+Terminal=false
+Categories=Graphics;Scanning;Office;
+Keywords=scan;scanner;document;pdf;duplex;samsung;mfp;
+StartupNotify=true
+StartupWMClass=prismscan

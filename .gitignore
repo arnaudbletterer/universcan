@@ -1,0 +1,23 @@
+# Binaries and build artifacts
+bin/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+cmd/prismscan/web/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Local test outputs and temporary logs
+*.log
+*.tmp

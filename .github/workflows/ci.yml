@@ -1,0 +1,38 @@
+name: CI Test & Build Matrix
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    name: Test & Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.x'
+          cache: true
+
+      - name: Sync web assets for embed
+        shell: bash
+        run: |
+          mkdir -p cmd/prismscan/web
+          cp -r web/* cmd/prismscan/web/
+
+      - name: Run Go Unit Tests
+        run: go test -v ./...
+
+      - name: Verify Binary Compilation
+        run: go build -v -buildvcs=false -o prismscan-test ./cmd/prismscan
