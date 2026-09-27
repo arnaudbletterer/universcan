@@ -4,7 +4,7 @@ UniverScan is designed so that anyone can download it and start scanning in less
 
 ---
 
-## 🪟 Windows (Windows 11, 10, 8, and Windows 7)
+## <img src="../assets/icons/windows.svg" width="22" height="22" alt="Windows" style="vertical-align: middle; margin-right: 6px;"> Windows (11, 10, 8, & Windows 7)
 
 UniverScan supports both modern 64-bit PCs and older 32-bit laptops/desktops from over a decade ago.
 
@@ -21,7 +21,7 @@ UniverScan supports both modern 64-bit PCs and older 32-bit laptops/desktops fro
 
 ---
 
-## 🍏 Apple Mac (macOS)
+## <img src="../assets/icons/apple.svg" width="22" height="22" alt="Apple" style="vertical-align: middle; margin-right: 6px;"> Apple Mac (macOS)
 
 Compatible with both modern Apple Silicon Macs (M1, M2, M3, M4) and older Intel Macs.
 
@@ -35,7 +35,7 @@ Compatible with both modern Apple Silicon Macs (M1, M2, M3, M4) and older Intel 
 
 ---
 
-## 🐧 Linux (Ubuntu, Debian, Fedora, Arch, Raspberry Pi)
+## <img src="../assets/icons/linux.svg" width="22" height="22" alt="Linux" style="vertical-align: middle; margin-right: 6px;"> Linux (Ubuntu, Debian, Fedora, Arch, Raspberry Pi)
 
 UniverScan comes as a 100% self-contained static executable with zero external dependencies or library locks.
 

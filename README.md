@@ -4,7 +4,9 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/arnaudbletterer/universcan?style=flat-square)](https://github.com/arnaudbletterer/universcan/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)](https://github.com/arnaudbletterer/universcan/releases)
+[![Windows](https://img.shields.io/badge/Windows-0078D4?style=flat-square&logo=windows&logoColor=white)](https://github.com/arnaudbletterer/universcan/releases)
+[![macOS](https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white)](https://github.com/arnaudbletterer/universcan/releases)
+[![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)](https://github.com/arnaudbletterer/universcan/releases)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local%20%26%20Offline-success?style=flat-square)](SECURITY.md)
 
 ---
@@ -25,9 +27,9 @@ Most scanner software is complicated, cluttered with dozens of technical options
 
 | Operating System | Download Link | Compatibility Notes |
 | :--- | :--- | :--- |
-| **Windows** | [**Download UniverScan-Setup.exe**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-Setup.exe) | Single installer for **Windows 11, 10, 8, & Windows 7** (both 64-bit and 32-bit). No admin password needed! |
-| **macOS (Apple)** | [**Download UniverScan-macOS.dmg**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) | Universal app for **Apple Silicon** (M1/M2/M3/M4) and **Intel Macs**. |
-| **Linux** | [**Download Linux Package**](https://github.com/arnaudbletterer/universcan/releases/latest) | Standalone static binaries for **64-bit x86**, **32-bit legacy PCs**, and **Raspberry Pi ARM64**. Zero library locks! |
+| <img src="docs/assets/icons/windows.svg" width="18" height="18" alt="Windows" style="vertical-align: middle;"> **Windows** | [**Download UniverScan-Setup.exe**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-Setup.exe) | Single installer for **Windows 11, 10, 8, & Windows 7** (both 64-bit and 32-bit). No admin password needed! |
+| <img src="docs/assets/icons/apple.svg" width="18" height="18" alt="Apple macOS" style="vertical-align: middle;"> **Apple macOS** | [**Download UniverScan-macOS.dmg**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) | Universal app for **Apple Silicon** (M1/M2/M3/M4) and **Intel Macs**. |
+| <img src="docs/assets/icons/linux.svg" width="18" height="18" alt="Linux" style="vertical-align: middle;"> **Linux** | [**Download Linux Package**](https://github.com/arnaudbletterer/universcan/releases/latest) | Standalone static binaries for **64-bit x86**, **32-bit legacy PCs**, and **Raspberry Pi ARM64**. Zero library locks! |
 
 ---
 
