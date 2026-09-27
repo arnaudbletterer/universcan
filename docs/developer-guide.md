@@ -30,7 +30,7 @@ UniverScan is engineered with modern Go, standard embedded web assets, and zero 
 
 ```bash
 # Clone the repository
-git clone https://github.com/abletterer/universcan.git
+git clone https://github.com/arnaudbletterer/universcan.git
 cd universcan
 
 # Run all unit and integration tests

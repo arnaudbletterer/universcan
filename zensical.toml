@@ -12,7 +12,7 @@ Copyright &copy; 2026 UniverScan Contributors. Free and open source for everyone
 """
 
 # Repository configuration
-repo_url = "https://github.com/abletterer/universcan"
+repo_url = "https://github.com/arnaudbletterer/universcan"
 repo_name = "UniverScan"
 
 # Documentation and site directories

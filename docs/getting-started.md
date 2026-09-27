@@ -9,7 +9,7 @@ UniverScan is designed so that anyone can download it and start scanning in less
 UniverScan supports both modern 64-bit PCs and older 32-bit laptops/desktops from over a decade ago.
 
 1. **Download the Installer:**
-   - Download [`UniverScan-Setup.exe`](https://github.com/abletterer/universcan/releases/latest/download/UniverScan-Setup.exe).
+   - Download [`UniverScan-Setup.exe`](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-Setup.exe).
 2. **Double-click the installer:**
    - Click **Next**, then **Install**.
    - You do **not** need an Administrator password; it installs directly into your user programs folder.
@@ -26,7 +26,7 @@ UniverScan supports both modern 64-bit PCs and older 32-bit laptops/desktops fro
 Compatible with both modern Apple Silicon Macs (M1, M2, M3, M4) and older Intel Macs.
 
 1. **Download:**
-   - Download [`UniverScan-macOS.dmg`](https://github.com/abletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) (or `UniverScan-macOS.zip`).
+   - Download [`UniverScan-macOS.dmg`](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) (or `UniverScan-macOS.zip`).
 2. **Install:**
    - Double-click the `.dmg` file.
    - Drag **UniverScan** into your **Applications** folder.

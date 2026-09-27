@@ -21,7 +21,7 @@ UniverScan is designed with privacy and local execution as non-negotiable fundam
 
 If you discover a security vulnerability in UniverScan:
 1. Please do **not** disclose it publicly on GitHub issues.
-2. Send a report with details to the maintainers or open a [GitHub Security Advisory](https://github.com/abletterer/universcan/security/advisories/new).
+2. Send a report with details to the maintainers or open a [GitHub Security Advisory](https://github.com/arnaudbletterer/universcan/security/advisories/new).
 3. Include steps to reproduce the issue, scanner models affected, and any proposed fixes.
 
 We will acknowledge receipt within 48 hours and work with you to release a patch promptly.

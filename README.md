@@ -2,9 +2,9 @@
 
 **The simple, universal document scanner for everyone — from kids to grandparents.**
 
-[![GitHub Release](https://img.shields.io/github/v/release/abletterer/universcan?style=flat-square&color=blue)](https://github.com/abletterer/universcan/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/arnaudbletterer/universcan?style=flat-square&color=blue)](https://github.com/arnaudbletterer/universcan/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)](https://github.com/abletterer/universcan/releases)
+[![Platform](https://img.shields.io/badge/Platforms-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)](https://github.com/arnaudbletterer/universcan/releases)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local%20%26%20Offline-success?style=flat-square)](SECURITY.md)
 
 ---
@@ -25,9 +25,9 @@ Most scanner software is complicated, cluttered with dozens of technical options
 
 | Operating System | Download Link | Compatibility Notes |
 | :--- | :--- | :--- |
-| **Windows** | [**Download UniverScan-Setup.exe**](https://github.com/abletterer/universcan/releases/latest/download/UniverScan-Setup.exe) | Single installer for **Windows 11, 10, 8, & Windows 7** (both 64-bit and 32-bit). No admin password needed! |
-| **macOS (Apple)** | [**Download UniverScan-macOS.dmg**](https://github.com/abletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) | Universal app for **Apple Silicon** (M1/M2/M3/M4) and **Intel Macs**. |
-| **Linux** | [**Download Linux Package**](https://github.com/abletterer/universcan/releases/latest) | Standalone static binaries for **64-bit x86**, **32-bit legacy PCs**, and **Raspberry Pi ARM64**. Zero library locks! |
+| **Windows** | [**Download UniverScan-Setup.exe**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-Setup.exe) | Single installer for **Windows 11, 10, 8, & Windows 7** (both 64-bit and 32-bit). No admin password needed! |
+| **macOS (Apple)** | [**Download UniverScan-macOS.dmg**](https://github.com/arnaudbletterer/universcan/releases/latest/download/UniverScan-macOS.dmg) | Universal app for **Apple Silicon** (M1/M2/M3/M4) and **Intel Macs**. |
+| **Linux** | [**Download Linux Package**](https://github.com/arnaudbletterer/universcan/releases/latest) | Standalone static binaries for **64-bit x86**, **32-bit legacy PCs**, and **Raspberry Pi ARM64**. Zero library locks! |
 
 ---
 
@@ -62,7 +62,7 @@ UniverScan is written in modern Go with embedded web assets and zero runtime dep
 
 ```bash
 # Clone the repository
-git clone https://github.com/abletterer/universcan.git
+git clone https://github.com/arnaudbletterer/universcan.git
 cd universcan
 
 # Run all automated tests

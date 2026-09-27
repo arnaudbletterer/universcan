@@ -5,7 +5,7 @@
 #define MyAppName "UniverScan"
 #define MyAppVersion "0.1.0"
 #define MyAppPublisher "UniverScan"
-#define MyAppURL "https://github.com/abletterer/universcan"
+#define MyAppURL "https://github.com/arnaudbletterer/universcan"
 #define MyAppExeName "universcan.exe"
 
 [Setup]

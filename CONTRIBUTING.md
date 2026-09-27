@@ -37,7 +37,7 @@ UniverScan is written in standard modern Go with pure offline vanilla HTML/CSS/J
 - Install [Go 1.22+](https://go.dev/dl/).
 - Clone the repository:
   ```bash
-  git clone https://github.com/abletterer/universcan.git
+  git clone https://github.com/arnaudbletterer/universcan.git
   cd universcan
   ```
 - Run the test suite:
